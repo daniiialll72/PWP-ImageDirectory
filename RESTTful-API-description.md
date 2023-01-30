@@ -60,7 +60,7 @@ A really short version of an overview for the RESTful Web API could be:
 
 ---
 
-:pencil2: *Write your description here*
+The Image Directory app API will provide the necessary functionality for administrators to manage the image database and for users to upload and tag their own images. The API will allow administrators to add images to the database, as well as search for specific images based on their tags and metadata. For users, the API will provide the ability to upload images either through direct upload or file browser. Additionally, users will be able to tag their images to make them easier to find and categorize.
 
 ---
 
@@ -89,7 +89,33 @@ This section is important because it outlines the concepts that you will later i
 
 ---
 
-:pencil2: *Write your text here and draw the diagram*
+Image: The main concept of the Image Directory app API is the image. An image represents a visual representation of a real-world object or event.
+
+User: Users are individuals who have the ability to upload and tag images in the Image Directory app. They are also able to search for images in the database.
+
+Administrator: Administrators are responsible for managing the images in the Image Directory app. They have the ability to add images to the database and perform searches on the images.
+
+Image Upload: This concept represents the process by which users can upload images to the Image Directory app. This can be done either through a direct upload or file browser.
+
+Image Tagging: This concept represents the process by which users can add descriptive tags to their images to make them easier to categorize and find.
+
+Image Search: This concept represents the process by which users and administrators can search for images in the Image Directory app. Searches can be based on the tags and metadata associated with the images.
+
+Authentication: This concept represents the process by which users are authenticated and authorized to access the Image Directory app.
+
+Relations:
+
+Image - User: A User can upload and tag Images.
+
+Image - Administrator: An Administrator can add Images to the database and perform searches on the Images.
+
+Image Upload - User: Only a User can upload Images to the Image Directory app.
+
+Image Tagging - User: Only a User can tag Images in the Image Directory app.
+
+Image Search - User, Administrator: Both Users and Administrators can perform searches on the Images in the Image Directory app.
+
+Authentication - User, Administrator: Both Users and Administrators are required to be authenticated and authorized to access the Image Directory app.
 
 ---
 
@@ -107,8 +133,9 @@ Describe at least one client and one service that could use your Web API. You mu
 
 ---
 
-:pencil2: *Write your text here*
+Image Tagging Client: An image tagging client is a software application that provides users with the ability to add descriptive tags to their images. This client would use the Image Directory API to retrieve images from the database and to add tags to the images. The client would send a request to the API to retrieve the images, then display them to the user in a graphical user interface. The user would then be able to add tags to the images, which the client would then send back to the API to update the image's metadata.
 
+Image Search Service: An image search service is a software service that provides users and administrators with the ability to search for images in the Image Directory. This service would use the Image Directory API to retrieve images from the database and to perform searches based on the tags and metadata associated with the images. The service would send a request to the API with a search query, which would return a list of images that match the query. The service would then display the images to the user or administrator.
 
 
 ## Related work
@@ -127,9 +154,16 @@ The purpose of this task is to get more familiar with what an API is. This will 
 
 ---
 
+Flickr API: The Flickr API resembles the functionality provided by the Image Directory API. The Flickr API provides developers with access to millions of photos and videos from the Flickr community. The API provides functionality for retrieving photos, uploading photos, and searching for photos.
 
+Functionality provided by Flickr API:
 
-:pencil2: *Write your text here*
+Retrieving Photos: The Flickr API provides functionality for retrieving photos from the Flickr community. This functionality includes retrieving photos based on specific search criteria such as tags, user ID, and location.
+Uploading Photos: The Flickr API provides functionality for uploading photos to the Flickr community. This functionality includes the ability to upload photos in multiple sizes and to specify the privacy level for the photos.
+Searching for Photos: The Flickr API provides functionality for searching for photos in the Flickr community. This functionality includes searching for photos based on specific search criteria such as tags, user ID, and location.
+API classification: The Flickr API is a pure REST API. This is because it uses HTTP methods such as GET, POST, and DELETE to perform operations on the API resources. The API follows the REST architectural style, which is characterized by a client-server architecture, statelessness, cacheability, and a uniform interface.
+
+Example client: One example client that uses the Flickr API is the Flickr app for iOS. This app allows users to view their photos on the Flickr community, upload photos to the community, and search for photos. The app uses the Flickr API to perform these operations and to display the results to the user in a graphical user interface.
 
 ---
 
@@ -137,8 +171,8 @@ The purpose of this task is to get more familiar with what an API is. This will 
 ## Resources allocation
 |**Task** | **Student**|**Estimated time**|
 |:------: |:----------:|:----------------:|
-|||| 
-|||| 
-|||| 
-|||| 
+|Backend-API|Danial Khaledi|1 month| 
+|Backend-API|Mehrdad Kaheh|1 month| 
+|Frontend-Client|Nazanin Nakhae|3 Weeks| 
+|Frontend-Client|Sepehr Samadi|3 weeks| 
 |||| 
