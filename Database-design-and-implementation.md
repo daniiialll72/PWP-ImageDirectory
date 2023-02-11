@@ -72,8 +72,61 @@ You can use the table skeleton provided below
 For this section you can use a visual tool to generate a diagram. Be sure that the digram contains all the information provided in the models. Some tools you can use include: <a href="https://www.dbdesigner.net/">https://dbdesigner.net/</a>, <a href="https://www.lucidchart.com/pages/tour/ER_diagram_tool">https://www.lucidchart.com/pages/tour/ER_diagram_tool</a>, <a href="https://dbdiffo.com/">https://dbdiffo.com/</a>
 
 </bloquote>
-
 </details>
+
+In this section we will discuss about the database tools, the structure, ORM, and the data we store in each field.
+
+### Research about the best solutions
+The data that we are getting involved in this project can be separeted to two different types. 1. Image data (byte arrays) 2. Text data (user information, metadata of each image, etc)
+
+Storing images in databases like MySQL and MongoDB can have some disadvantages. Here are a few of them:
+
+* Increased storage overhead: Storing images directly in databases like MySQL or MongoDB can increase the storage overhead, as binary data typically takes up more space than other data types.
+
+* Performance issues: Querying images stored in databases can be slower than querying other data types, due to the size of the data and the overhead of fetching and processing binary data.
+
+* Limitations on file size: Databases like MySQL have limits on the maximum size of a single record, which can limit the size of the images that can be stored in the database. MongoDB, on the other hand, has a larger document size limit, but still, storing large images can impact performance and create issues with disk space.
+
+* Complexity: Storing images in databases requires additional code and logic to handle the binary data.
+
+* Data management: When images are stored in databases, it becomes more difficult to manage the data outside of the database, such as backing up and archiving data, or moving it to different storage locations.
+
+As a result, we have decided to store images in a separate storage solution, which is called [MinIO](https://min.io/).
+
+#### MINIO
+[MinIO](https://min.io/) is an open-source object storage server that is designed to be highly scalable and performant. MinIO is designed to be simple to use and highly available, and it supports multi-cloud deployments.
+
+Here are some key features of MinIO:
+
+* Object storage: MinIO stores data as objects, which are essentially files with metadata. Objects can be any type of data, including images, videos, backups, and more.
+
+* High performance: MinIO is optimized for high performance and is designed to handle large amounts of data with low latency.
+
+* Scalability: MinIO is designed for horizontal scalability, meaning you can add more storage capacity by adding more servers.
+
+* High availability: MinIO supports high availability through data replication, so you can ensure that your data is always available, even if one of the servers fails.
+
+* Security: MinIO supports encryption and role-based access control, so you can secure your data and control who has access to it.
+
+#### MongoDB
+Regarding the three top high priority missions that our application shoul have, we selected MongoDB to store text-based data. These three high priority missions are:
+1. Flexibility in storing document based data
+2. High-performance in data retrieval
+3. Supporting query language and data integration
+
+(MongoDB)[https://www.mongodb.com/] is a popular NoSQL document-oriented database that provides a flexible and scalable database solution. Here are some more details about MongoDB and its features:
+
+* Document-oriented data model: MongoDB stores data in documents, which are like JSON objects, and are stored in collections. This makes it easier to store and query complex data structures.
+
+* Dynamic schema: MongoDB does not enforce a strict schema, which allows for more flexible and dynamic data structures. This means that you can store different types of data in the same collection, and you don't have to define the structure of your data beforehand.
+
+* Scalability: MongoDB is designed for horizontal scalability, which means that you can easily add more servers to increase your database's capacity.
+
+* High performance: MongoDB uses indexes to improve query performance, and it supports in-memory storage and other performance optimizations.
+
+* Rich query language: MongoDB supports a rich query language that allows you to query data using complex conditions, perform aggregations, and more.
+
+### Models and Table
 
 ---
 
