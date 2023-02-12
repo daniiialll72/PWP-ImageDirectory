@@ -5,7 +5,7 @@ services:
     ports:
       - 5000:5000
 
-  mongodb_container:
+  mongodb:
     image: mongo:latest
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
