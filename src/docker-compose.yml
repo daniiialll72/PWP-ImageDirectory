@@ -1,20 +1,36 @@
 version: '3.8'
 services:
-  image-directory:
-    build: .
-    ports:
-      - 5000:5000
-
-  mongodb:
+  mongo:
     image: mongo:latest
+    container_name: mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 1234qwerty
     ports:
       - 27017:27017
+    networks:
+      - image_directory
     volumes:
-      - mongodb_data_container:/data/db
-  
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+    restart: always
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 1234qwerty
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: "27017"
+    ports:
+      - 8081:8081
+    networks:
+      - image_directory
+    depends_on:
+      - mongo
+    restart: always
+
   minio:
     image: minio/minio
     ports:
@@ -23,7 +39,17 @@ services:
     volumes:
       - minio_storage:/data
     environment:
-      MINIO_ROOT_USER: masoud
+      MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: 1234qwerty
+    networks:
+      - image_directory
     command: server --console-address ":9001" /data
-  
+    restart: always
+
+networks:
+  image_directory:
+
+volumes:
+  mongo_data:
+  mongo_config:
+  minio_storage:
