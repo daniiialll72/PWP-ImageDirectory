@@ -1,24 +1,34 @@
-import importlib
-import random
-import os
+# Group work: Nazanin Nakhaie Ahooie, Mehrdad Kaheh, Sepehr Samadi, Danial Khaledi
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-flask_app = os.environ.get("FLASK_APP")
-app = importlib.import_module(flask_app)
+app = Flask("app")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
 
-app.db.create_all()
+ctx = app.app_context()
+ctx.push()
 
-for idx, letter in enumerate("ABC", start=1):
-    loc = app.Location(
-        name=f"Location-{letter}",
-        latitude=round(random.random() * 100, 2),
-        longitude=round(random.random() * 100, 2),
-        altitude=round(random.random() * 100, 2),
-    )
-    sensor = app.Sensor(
-        name=f"Sensor-{idx}",
-        model="test-sensor",
-    )
-    sensor.location = loc
-    app.db.session.add(sensor)
+class StorageItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    qty = db.Column(db.Integer, nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
+    location = db.Column(db.String(64), nullable=False)
+
+    product = db.relationship("Product", back_populates="in_storage")
     
-app.db.session.commit()
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    handle = db.Column(db.String(64), unique=True, nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    in_storage = db.relationship("StorageItem", back_populates="product")
+
+db.create_all()
+
+p1 = Product(handle="test", weight=2.5, price=5.3)
+
+db.session.add(p1)
+db.session.commit()
+
