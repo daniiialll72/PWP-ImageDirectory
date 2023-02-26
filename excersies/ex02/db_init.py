@@ -1,6 +1,7 @@
 import importlib
 import random
 import os
+
 flask_app = os.environ.get("FLASK_APP")
 app = importlib.import_module(flask_app)
 
