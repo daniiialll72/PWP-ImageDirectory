@@ -24,11 +24,13 @@ class Product(db.Model):
 
 class ProductCollection(Resource):
     def get(self):
-        products = Product.query.all()
+        products = Product.query.order_by(Product.handle).all()
         res = []
         for product in products:
-            res.append({"handle": product.handle, "weight": "{0} kg".format(product.weight), "price": product.price})
-            return res, 200
+            res.append({"handle": product.handle, 
+                        "weight": product.weight, 
+                        "price": product.price})
+        return res, 200
     
     def post(self):
         if not request.json:

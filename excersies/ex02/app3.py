@@ -31,7 +31,7 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     handle = db.Column(db.String(64), unique=True, nullable=False)
     weight = db.Column(db.Float, nullable=False)
-    price = db.Column(db.Float, nullable=False)	
+    price = db.Column(db.Float, nullable=False)
     in_storage = db.relationship("StorageItem", back_populates="product")
 
 class ProductCollection(Resource):
@@ -83,4 +83,3 @@ class ProductItem(Resource):
 app.url_map.converters["product"] = ProductConverter
 api.add_resource(ProductCollection, "/api/products/")
 api.add_resource(ProductItem, "/api/products/<product:product>/")
-# api.add_resource(ProductItem, "/api/products/<handle>/")

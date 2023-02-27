@@ -27,8 +27,12 @@ class Product(db.Model):
 
 db.create_all()
 
-p1 = Product(handle="test", weight=2.5, price=5.3)
+p1 = Product(handle="a1", weight=2.5, price=5.3)
+p2 = Product(handle="a2", weight=2.7, price=10)
+p3 = Product(handle="a3", weight=2.7, price=10)
 
 db.session.add(p1)
+db.session.add(p2)
+db.session.add(p3)
 db.session.commit()
 
