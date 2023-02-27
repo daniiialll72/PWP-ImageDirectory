@@ -1,12 +1,24 @@
 from flask import Flask, request, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
+from werkzeug.exceptions import NotFound
+from werkzeug.routing import BaseConverter
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 api = Api(app)
+
+class ProductConverter(BaseConverter):
+    def to_python(self, handle):
+        db_product = Product.query.filter_by(handle=handle).first()
+        if db_product is None:
+            raise NotFound
+        return db_product
+        
+    def to_url(self, db_product):
+        return db_product.handle
 
 class StorageItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -68,5 +80,7 @@ class ProductItem(Resource):
     def get(self, handle):
         return Response(status=501)
 
+app.url_map.converters["product"] = ProductConverter
 api.add_resource(ProductCollection, "/api/products/")
-api.add_resource(ProductItem, "/api/products/<handle>/")
+api.add_resource(ProductItem, "/api/products/<product:product>/")
+# api.add_resource(ProductItem, "/api/products/<handle>/")
