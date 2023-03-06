@@ -3,6 +3,10 @@ import pprint
 from flask_restful import Api, Resource
 from . import models
 from mongoengine import *
+from minio import Minio
+from werkzeug.utils import secure_filename
+import uuid
+import os
 
 app = Flask(__name__)
 
@@ -13,9 +17,18 @@ server = '86.50.229.208'
 db_name = 'image_directory'
 uri = f'mongodb://{username}:{password}@{server}:27017/{db_name}?authSource=admin&retryWrites=true&w=majority'
 connect(db=db_name, 
-        username=username, 
-        password=password, 
+        username=username,
+        password=password,
         host=uri)
+
+minio_client = Minio(
+    "86.50.229.208:9000",
+    access_key="8UQvmZYlLMmbdGw4",
+    secret_key="VxI9Ig0huEvN07seO168TY6E3eRDZUge",
+    secure=False
+)
+
+ALLOWED_EXTENSIONS = {'jpg', 'png'}
 
 api = Api(app)
 
@@ -37,6 +50,71 @@ class UserCollection(Resource):
             user.save()
         except Exception as e:
             return Response(str(e), 400)
-        return Response(user.to_json(), 200, headers=dict(request.headers))
+        return Response(user.to_json(), 201, headers=dict(request.headers))
+    
+class ImageCollection(Resource):
+    def get(self):
+        pass
+
+    # https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
+    def post(self):
+        print("Here")
+        if 'file' not in request.files:
+            return Response("No file attached", 400, headers=dict(request.headers))
+        print("Here")
+        file = request.files['file']
+        filename = secure_filename(file.filename)
+        if filename == '':
+            return Response("No file attached", 400, headers=dict(request.headers))
+        print(file.filename)
+        if not file:
+            return Response("No file attached", 400, headers=dict(request.headers))
+        if not allowed_file(filename):
+            return Response("Format unaccepted", 400, headers=dict(request.headers))
+
+        found = minio_client.bucket_exists("images")
+        if not found:
+            minio_client.make_bucket("images")
+        else:
+            print("Bucket 'images' already exists")
+        file_size = len(file.stream.read())
+        file.seek(0)
+        minio_result = minio_client.put_object(
+            "images", f'{generate_guid()}.{get_file_extension(filename)}', file.stream, file_size
+        )
+        print(
+            "created {0} object; etag: {1}, version-id: {2}".format(
+                minio_result.object_name, minio_result.etag, minio_result.version_id,
+            ),
+        )
+
+        tags_string = request.form.get('tags')
+        tags_list = tags_string.replace(' ', '').split(',')
+        image = models.Image()
+        image.description = request.form.get('description')
+        image.tags = tags_list
+        image.file_content = models.FileContent(file_name=filename, storage_id=minio_result.etag)
+        try:
+            image.save()
+        except Exception as e:
+            return Response(str(e), 400)
+
+        return Response(status=201)
+    
+    def delete(self):
+        
+        pass
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def generate_guid():
+    guid = str(uuid.uuid4())
+    return guid
+
+def get_file_extension(filename):
+    return os.path.splitext(filename)[1]
 
 api.add_resource(UserCollection, "/api/users/")
+api.add_resource(ImageCollection, "/api/images/")
