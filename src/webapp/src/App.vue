@@ -4,13 +4,17 @@
 
 <script>
 import Header from './components/Main-Header'
+
+
+
 export default {
   name: 'App',
   components: {
-    Header
+    Header,
   }
 }
 </script>
+
 
 <style>
 
