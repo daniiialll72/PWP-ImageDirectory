@@ -10,7 +10,7 @@
   <div class="column-search">
     <v-text-field
         label="Search"
-        prepend-inner-icon="mdi-map-marker"
+        prepend-inner-icon="mdi-magnify"
         variant="outlined"
         class="text-white"
     ></v-text-field>
@@ -20,7 +20,10 @@
   <div class="column-button">
     <v-btn
         color="#EEA7A7"
-        rounded="pill">
+        rounded="pill"
+        width="10rem"
+        height="3rem"
+    >
       <p style="color:#fff;">Upload</p>
     </v-btn>
   </div>
@@ -32,6 +35,7 @@
 import '../assets/css/styles.scss'
 import VTextField from 'vuetify'
 import VBtn from 'vuetify'
+
 export default {
   name: "Main-Header",
   components: {
