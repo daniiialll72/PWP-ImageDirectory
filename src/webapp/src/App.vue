@@ -1,16 +1,24 @@
 <template>
   <Header/>
+  <Body/>
+
 </template>
 
 <script>
 import Header from './components/Main-Header'
+import Body from './components/Home-Body'
+
+
+
 export default {
   name: 'App',
   components: {
-    Header
+    Header,
+    Body
   }
 }
 </script>
+
 
 <style>
 
@@ -23,6 +31,7 @@ html{
   -moz-background-size: contain;
   -o-background-size: contain;
   background-size: 100% 100%;
+  background-color: #5F5F5F;
 
 }
 #app {
