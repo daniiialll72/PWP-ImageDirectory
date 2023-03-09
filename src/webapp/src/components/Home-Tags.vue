@@ -1,14 +1,18 @@
 <template>
-  <div class="filters">
+  <div class="box">
 
     <div class="filterBox">
       <div class="filterSearch">
 
         <div class="filterTitle">
           Tags
+          <hr class="divider">
         </div>
-        <hr class="divider">
+
+        <div class="tagsList">
           <v-list :items="items"></v-list>
+        </div>
+
       </div>
 
   </div>
@@ -17,6 +21,8 @@
 
 <script>
 import VList from 'vuetify'
+import '../assets/css/styles.scss'
+
 
 export default {
   name: "Home-Tags",
@@ -36,6 +42,33 @@ export default {
       {
         title: 'Item #3',
         value: 3,
+      },{
+        title: 'Item #3',
+        value: 3,
+      },{
+        title: 'Item #3',
+        value: 3,
+      },{
+        title: 'Item #3',
+        value: 3,
+      },{
+        title: 'Item #3',
+        value: 3,
+      },{
+        title: 'Item #3',
+        value: 3,
+      },{
+        title: 'Item #3',
+        value: 3,
+      },{
+        title: 'Item #3',
+        value: 3,
+      },{
+        title: 'Item #3',
+        value: 3,
+      },{
+        title: 'Item #3',
+        value: 3,
       },
     ],
   }),
@@ -43,6 +76,13 @@ export default {
 </script>
 
 <style scoped>
+.tagsList{
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  max-height: 50vh;
+
+}
 .filterSearch{
   width: 100%;
 }
@@ -58,13 +98,11 @@ export default {
   flex-direction: row;
   justify-content: center;
   background-color: white;
-  width: 90%;
 }
-.filters{
-  min-width: 20%;
-  max-width: 30%;
-}
+
 .divider{
   width: 100%;
 }
+
+
 </style>

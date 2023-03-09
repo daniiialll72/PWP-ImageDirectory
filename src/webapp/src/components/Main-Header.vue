@@ -6,7 +6,6 @@
     </p>
   </div>
 
-
   <div class="column-search">
     <v-text-field
         label="Search"
@@ -14,19 +13,19 @@
         variant="outlined"
         class="text-white"
     ></v-text-field>
-  </div>
+</div>
 
 
   <div class="column-button">
+
     <v-btn
         color="#EEA7A7"
         rounded="pill"
         width="10rem"
-        height="3rem"
-    >
+        height="3rem">
       <p style="color:#fff;">Upload</p>
     </v-btn>
-  </div>
+    </div>
 
 </div>
 </template>
@@ -52,6 +51,7 @@ export default {
   width: 100%;
   max-width: 100%;
   justify-content: space-between;
+  margin-bottom: 4rem;
 }
 .column-button{
   display: flex;
