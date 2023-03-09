@@ -7,6 +7,8 @@ from minio import Minio
 from werkzeug.utils import secure_filename
 import uuid
 import os
+from werkzeug.routing import BaseConverter
+from werkzeug.exceptions import NotFound
 
 app = Flask(__name__)
 
@@ -29,6 +31,7 @@ minio_client = Minio(
 )
 
 ALLOWED_EXTENSIONS = {'jpg', 'png'}
+TEST_USER_ID = "64099805f162b6c56e7ada81"
 
 api = Api(app)
 
@@ -54,8 +57,8 @@ class UserCollection(Resource):
     
 class ImageCollection(Resource):
     def get(self):
-        pass
-
+        return Response(models.Image.objects.to_json(), status=200, headers=dict([("Content-Type","application/json")]))
+    
     # https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
     def post(self):
         print("Here")
@@ -79,8 +82,9 @@ class ImageCollection(Resource):
             print("Bucket 'images' already exists")
         file_size = len(file.stream.read())
         file.seek(0)
+        generated_guid = generate_guid()
         minio_result = minio_client.put_object(
-            "images", f'{generate_guid()}.{get_file_extension(filename)}', file.stream, file_size
+            "images", f'{generated_guid}{get_file_extension(filename)}', file.stream, file_size
         )
         print(
             "created {0} object; etag: {1}, version-id: {2}".format(
@@ -93,17 +97,54 @@ class ImageCollection(Resource):
         image = models.Image()
         image.description = request.form.get('description')
         image.tags = tags_list
-        image.file_content = models.FileContent(file_name=filename, storage_id=minio_result.etag)
+        image.file_content = models.FileContent(file_name=filename, storage_id=f'{generated_guid}{get_file_extension(filename)}')
         try:
             image.save()
         except Exception as e:
             return Response(str(e), 400)
 
         return Response(status=201)
+
+class ImageItem(Resource):
+    def get(self, image):
+        return Response(image.to_json(), status=200, headers=dict(request.headers))
     
-    def delete(self):
-        
+    def delete(self, image):
+        minio_client.remove_object("images", image.file_content.storage_id)
+        image.delete()
+        return Response(status=200, headers=dict(request.headers))
+    def put(self, image):
+        if not request.json:
+            Response(status=415)
+        description = request.json["description"]
+        tags_string = request.json["tags"]
+
+        image.description = description
+        image.tags = tags_string.replace(' ', '').split(',')
+        image.save()
+        return Response(status=200)
+
+class ImageCommentCollection(Resource):
+    def post(self, image):
         pass
+        if not request.json:
+            Response(status=415)
+        text = request.json["text"]
+        user = models.User.objects.get(id=TEST_USER_ID) # TODO: Should be changed with Authenticated user id
+        comment = models.Comment(userId=user.id, text=text)
+        image.comments.append(comment)
+        image.save()
+        return Response(status=201)
+
+class ImageConverter(BaseConverter):
+    def to_python(self, id):
+        db_model = models.Image.objects.get(id=id)
+        if db_model is None:
+            raise NotFound #TODO: Which one is best practice
+        return db_model
+        
+    def to_url(self, db_model):
+        return db_model.id
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -116,5 +157,9 @@ def generate_guid():
 def get_file_extension(filename):
     return os.path.splitext(filename)[1]
 
+app.url_map.converters["image"] = ImageConverter
+
 api.add_resource(UserCollection, "/api/users/")
 api.add_resource(ImageCollection, "/api/images/")
+api.add_resource(ImageItem, "/api/images/<image:image>")
+api.add_resource(ImageCommentCollection, "/api/images/<image:image>/comments/")

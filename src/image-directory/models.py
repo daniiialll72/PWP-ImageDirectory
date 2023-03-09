@@ -8,11 +8,11 @@ class User(Document):
     gender = StringField( choices=['male', 'female', 'others'])
 
 class Like(EmbeddedDocument):
-    userId = ObjectIdField(required=True)
+    userId = ReferenceField(User)
     createdAt = DateTimeField(required=True)
 
 class Comment(EmbeddedDocument):
-    userId = ObjectIdField(required=True)
+    userId = ReferenceField(User)
     text = StringField(required=True)
 
 class FileContent(EmbeddedDocument):
