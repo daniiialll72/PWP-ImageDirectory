@@ -31,6 +31,7 @@ minio_client = Minio(
 )
 
 ALLOWED_EXTENSIONS = {'jpg', 'png'}
+TEST_USER_ID = "64099805f162b6c56e7ada81"
 
 api = Api(app)
 
@@ -111,8 +112,29 @@ class ImageItem(Resource):
     def delete(self, image):
         minio_client.remove_object("images", image.file_content.storage_id)
         image.delete()
-
         return Response(status=200, headers=dict(request.headers))
+    def put(self, image):
+        if not request.json:
+            Response(status=415)
+        description = request.json["description"]
+        tags_string = request.json["tags"]
+
+        image.description = description
+        image.tags = tags_string.replace(' ', '').split(',')
+        image.save()
+        return Response(status=200)
+
+class ImageCommentCollection(Resource):
+    def post(self, image):
+        pass
+        if not request.json:
+            Response(status=415)
+        text = request.json["text"]
+        user = models.User.objects.get(id=TEST_USER_ID) # TODO: Should be changed with Authenticated user id
+        comment = models.Comment(userId=user.id, text=text)
+        image.comments.append(comment)
+        image.save()
+        return Response(status=201)
 
 class ImageConverter(BaseConverter):
     def to_python(self, id):
@@ -140,3 +162,4 @@ app.url_map.converters["image"] = ImageConverter
 api.add_resource(UserCollection, "/api/users/")
 api.add_resource(ImageCollection, "/api/images/")
 api.add_resource(ImageItem, "/api/images/<image:image>")
+api.add_resource(ImageCommentCollection, "/api/images/<image:image>/comments/")
