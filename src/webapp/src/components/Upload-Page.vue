@@ -1,10 +1,15 @@
 <template>
-
+<Header/>
 </template>
 
 <script>
+import Header from './Main-Header'
+
 export default {
-  name: "Upload-Page"
+  name: "Upload-Page",
+  components: {
+    Header
+  }
 }
 </script>
 
