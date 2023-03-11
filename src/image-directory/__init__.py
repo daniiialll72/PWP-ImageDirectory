@@ -37,13 +37,6 @@ def create_app(test_config=None):
             username=username,
             password=password,
             host=uri)
-    
-    minio_client = Minio(
-        "86.50.229.208:9000",
-        access_key="8UQvmZYlLMmbdGw4",
-        secret_key="VxI9Ig0huEvN07seO168TY6E3eRDZUge",
-        secure=False
-    )
 
     ALLOWED_EXTENSIONS = {'jpg', 'png'}
     TEST_USER_ID = "64099805f162b6c56e7ada81"
@@ -55,6 +48,16 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
+    
+    from . import utils
+    app.url_map.converters["image"] = utils.ImageConverter
+
     from . import api
+    app.register_blueprint(api.api_bp)
+
+    # a simple page that says hello
+    @app.route('/hello')
+    def hello():
+        return 'Hello, World!'
 
     return app

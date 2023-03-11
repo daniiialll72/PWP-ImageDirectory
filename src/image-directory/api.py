@@ -11,19 +11,10 @@ from werkzeug.routing import BaseConverter
 from werkzeug.exceptions import NotFound
 import datetime
 import json
+from flask import Blueprint
 
-app = Flask(__name__)
-
-# Connect to MongoDB
-username = 'admin'
-password = '1234qwerty'
-server = '86.50.229.208'
-db_name = 'image_directory'
-uri = f'mongodb://{username}:{password}@{server}:27017/{db_name}?authSource=admin&retryWrites=true&w=majority'
-connect(db=db_name, 
-        username=username,
-        password=password,
-        host=uri)
+api_bp = Blueprint("api", __name__, url_prefix="/api")
+api = Api(api_bp)
 
 minio_client = Minio(
     "86.50.229.208:9000",
@@ -34,8 +25,6 @@ minio_client = Minio(
 
 ALLOWED_EXTENSIONS = {'jpg', 'png'}
 TEST_USER_ID = "64099805f162b6c56e7ada81"
-
-api = Api(app)
 
 class UserCollection(Resource):
     def get(self):
@@ -169,16 +158,6 @@ class ImageLikeCollection(Resource):
         image.update(pull__likes=previous_like)
         return Response(status=200)
 
-class ImageConverter(BaseConverter):
-    def to_python(self, id):
-        db_model = models.Image.objects.get(id=id)
-        if db_model is None:
-            raise NotFound #TODO: Which one is best practice
-        return db_model
-        
-    def to_url(self, db_model):
-        return db_model.id
-
 def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -190,11 +169,11 @@ def generate_guid():
 def get_file_extension(filename):
     return os.path.splitext(filename)[1]
 
-app.url_map.converters["image"] = ImageConverter
+# app.url_map.converters["image"] = ImageConverter
 
-api.add_resource(UserCollection, "/api/users/")
-api.add_resource(ImageCollection, "/api/images/")
-api.add_resource(ImageItem, "/api/images/<image:image>")
-api.add_resource(ImageCommentCollection, "/api/images/<image:image>/comments/")
-api.add_resource(ImageCommentItem, "/api/images/<image:image>/comments/<comment_id>")
-api.add_resource(ImageLikeCollection, "/api/images/<image:image>/likes/")
+api.add_resource(UserCollection, "/users/")
+api.add_resource(ImageCollection, "/images/")
+api.add_resource(ImageItem, "/images/<image:image>")
+api.add_resource(ImageCommentCollection, "/images/<image:image>/comments/")
+api.add_resource(ImageCommentItem, "/images/<image:image>/comments/<comment_id>")
+api.add_resource(ImageLikeCollection, "/images/<image:image>/likes/")
