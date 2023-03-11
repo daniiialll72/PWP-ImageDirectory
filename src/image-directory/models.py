@@ -1,4 +1,5 @@
 from mongoengine import *
+from bson.objectid import ObjectId
 
 class User(Document):
     email = EmailField(required=True)
@@ -9,9 +10,13 @@ class User(Document):
 
 class Like(EmbeddedDocument):
     userId = ReferenceField(User)
-    createdAt = DateTimeField(required=True)
+    created = DateTimeField(required=True)
 
 class Comment(EmbeddedDocument):
+    id = ObjectIdField(required=True, 
+                        default=ObjectId,
+                        unique=True, 
+                        primary_key=True)
     userId = ReferenceField(User)
     text = StringField(required=True)
 

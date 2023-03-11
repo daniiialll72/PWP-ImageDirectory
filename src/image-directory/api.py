@@ -9,6 +9,8 @@ import uuid
 import os
 from werkzeug.routing import BaseConverter
 from werkzeug.exceptions import NotFound
+import datetime
+import json
 
 app = Flask(__name__)
 
@@ -126,7 +128,6 @@ class ImageItem(Resource):
 
 class ImageCommentCollection(Resource):
     def post(self, image):
-        pass
         if not request.json:
             Response(status=415)
         text = request.json["text"]
@@ -135,6 +136,38 @@ class ImageCommentCollection(Resource):
         image.comments.append(comment)
         image.save()
         return Response(status=201)
+    
+class ImageCommentItem(Resource):
+    def delete(self, image, comment_id):
+        previous_comment = None
+        for comment in image.comments:
+            print(type(comment.id))
+            print(str(comment.id))
+            if str(comment.id) == comment_id:
+                previous_comment = comment
+        if previous_comment is None:
+            return Response("No record exists", status=400)
+        image.update(pull__comments=previous_comment)
+        return Response(status=200)
+    
+class ImageLikeCollection(Resource):
+    def post(self, image):
+        user = models.User.objects.get(id=TEST_USER_ID) # TODO: Should be changed with Authenticated user id
+        like = models.Like(userId=user.id, created=datetime.datetime.now())
+        image.likes.append(like)
+        image.save()
+        return Response(status=201)
+    
+    def delete(self, image):
+        user = models.User.objects.get(id=TEST_USER_ID) # TODO: Should be changed with Authenticated user id
+        previous_like = None
+        for like in image.likes:
+            if like.userId.id == user.id:
+                previous_like = like
+        if previous_like is None:
+            return Response("No record exists", status=400)
+        image.update(pull__likes=previous_like)
+        return Response(status=200)
 
 class ImageConverter(BaseConverter):
     def to_python(self, id):
@@ -163,3 +196,5 @@ api.add_resource(UserCollection, "/api/users/")
 api.add_resource(ImageCollection, "/api/images/")
 api.add_resource(ImageItem, "/api/images/<image:image>")
 api.add_resource(ImageCommentCollection, "/api/images/<image:image>/comments/")
+api.add_resource(ImageCommentItem, "/api/images/<image:image>/comments/<comment_id>")
+api.add_resource(ImageLikeCollection, "/api/images/<image:image>/likes/")
