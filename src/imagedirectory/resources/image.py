@@ -4,6 +4,7 @@ from imagedirectory import models
 from mongoengine import *
 from werkzeug.utils import secure_filename
 from imagedirectory import utils
+from datetime import datetime
 
 class ImageCollection(Resource):
     def get(self):
@@ -47,6 +48,7 @@ class ImageCollection(Resource):
         image = models.Image()
         image.description = request.form.get('description')
         image.tags = tags_list
+        image.created_at = datetime.now()
         image.file_content = models.FileContent(file_name=filename, storage_id=f'{generated_guid}{utils.get_file_extension(filename)}')
         try:
             image.save()

@@ -1,15 +1,17 @@
 from mongoengine import *
 from bson.objectid import ObjectId
+from imagedirectory.constants import USERNAME_REGEX
 
 class User(Document):
-    email = EmailField(required=True)
+    username = StringField(required=True, unique=True, regex=USERNAME_REGEX)
+    email = EmailField(required=True, unique=True)
     first_name = StringField(required=True, max_length=50)
     last_name = StringField(required=True, max_length=50)
-    password_hash = StringField(required=True, max_length=50)
     gender = StringField( choices=['male', 'female', 'others'])
+    password_hash = StringField(required=True, max_length=250)
 
 class Like(EmbeddedDocument):
-    userId = ReferenceField(User)
+    user_id = ReferenceField(User)
     created = DateTimeField(required=True)
 
 class Comment(EmbeddedDocument):
@@ -17,7 +19,7 @@ class Comment(EmbeddedDocument):
                         default=ObjectId,
                         unique=True, 
                         primary_key=True)
-    userId = ReferenceField(User)
+    user_id = ReferenceField(User)
     text = StringField(required=True)
 
 class FileContent(EmbeddedDocument):
@@ -25,20 +27,27 @@ class FileContent(EmbeddedDocument):
     storage_id = StringField(required=True)
 
 class Image(Document):
-    userId = ReferenceField(User)
+    user_id = ReferenceField(User)
     description = StringField(max_length=150)
     tags = ListField(StringField())
     file_content = EmbeddedDocumentField(FileContent)
     likes = ListField(EmbeddedDocumentField(Like))
     comments = ListField(EmbeddedDocumentField(Comment))
-    # createdAt = DateTimeField(required=True)
-    # updatedAt = DateTimeField()
-    # isAbused = BooleanField(required=True, default=False)
+    created_at = DateTimeField(required=True)
+    updated_at = DateTimeField()
+    is_abused = BooleanField(required=True, default=False)
 
 class Admin(Document):
-    username = StringField(required=True)
-    email = StringField(required=True)
+    username = StringField(required=True, unique=True, regex=USERNAME_REGEX)
+    email = EmailField(required=True)
     password = StringField(required=True)
-    phone = StringField()
-    createdAt = DateTimeField(required=True)
-    updatedAt = DateTimeField(required=True)
+    created_at = DateTimeField(required=True)
+    updated_at = DateTimeField()
+    
+class ReportedImage(Document):
+    user_id = ReferenceField(User)
+    image_id = ReferenceField(Image)
+    reason = StringField(required=True, max_length=150)
+    accepted = BooleanField()
+    created_at = DateTimeField(required=True)
+    

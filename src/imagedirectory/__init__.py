@@ -38,9 +38,6 @@ def create_app(test_config=None):
             password=password,
             host=uri)
 
-    ALLOWED_EXTENSIONS = {'jpg', 'png'}
-    TEST_USER_ID = "64099805f162b6c56e7ada81"
-
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
@@ -51,6 +48,7 @@ def create_app(test_config=None):
     
     from . import utils
     app.url_map.converters["image"] = utils.ImageConverter
+    app.url_map.converters["user"] = utils.UserConverter
 
     from . import api
     app.register_blueprint(api.api_bp)
