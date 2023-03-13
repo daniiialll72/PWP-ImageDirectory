@@ -12,12 +12,19 @@ from werkzeug.exceptions import NotFound
 import datetime
 import json
 import logging
+from flask_caching import Cache
+
+cache = Cache()
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY='dev'
+        SECRET_KEY='dev',
+        CACHE_TYPE='SimpleCache',
+        # CACHE_TYPE='RedisCache',
+        # CACHE_REDIS_URL='redis://localhost:6379/0',
+        CACHE_DEFAULT_TIMEOUT= 300
     )
 
     logging.basicConfig(
@@ -37,6 +44,8 @@ def create_app(test_config=None):
             username=username,
             password=password,
             host=uri)
+    
+    cache.init_app(app)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing

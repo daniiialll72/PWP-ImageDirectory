@@ -5,9 +5,12 @@ from mongoengine import *
 from werkzeug.utils import secure_filename
 from imagedirectory import utils
 from datetime import datetime
+from imagedirectory import cache
 
 class ImageCollection(Resource):
+    @cache.cached(timeout=300)
     def get(self):
+        print("No cached")
         return Response(models.Image.objects.to_json(), status=200, headers=dict([("Content-Type","application/json")]))
     
     # https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
@@ -58,7 +61,9 @@ class ImageCollection(Resource):
         return Response(status=201)
 
 class ImageItem(Resource):
+    @cache.cached(timeout=300)
     def get(self, image):
+        print("No cached")
         return Response(image.to_json(), status=200, headers=dict(request.headers))
     
     def delete(self, image):
