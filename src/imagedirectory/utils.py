@@ -44,7 +44,7 @@ def get_file_extension(filename):
 def validate_username(username):
     # define the regular expression pattern
     pattern = USERNAME_REGEX
-    if re.match(pattern, username):
+    if re.match(pattern, username):   
         return True
     else:
         return False

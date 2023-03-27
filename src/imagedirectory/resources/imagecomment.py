@@ -2,8 +2,7 @@ from flask import request, Response
 from flask_restful import Resource
 from imagedirectory import models
 from mongoengine import *
-
-TEST_USER_ID = "64099805f162b6c56e7ada81"
+from imagedirectory.constants import TEST_USER_ID
 
 class ImageCommentCollection(Resource):
     def post(self, image):
@@ -11,7 +10,7 @@ class ImageCommentCollection(Resource):
             Response(status=415)
         text = request.json["text"]
         user = models.User.objects.get(id=TEST_USER_ID) # TODO: Should be changed with Authenticated user id
-        comment = models.Comment(userId=user.id, text=text)
+        comment = models.Comment(user_id=user.id, text=text)
         image.comments.append(comment)
         image.save()
         return Response(status=201)

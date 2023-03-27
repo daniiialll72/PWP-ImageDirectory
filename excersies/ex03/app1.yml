@@ -1,0 +1,74 @@
+openapi: "3.0.3"
+info:
+  title: Minimal Document
+  version: 1.0.0
+servers: 
+  - url: "/api"
+components:
+  schemas:
+      Product:
+            type: object
+            properties:
+                handle:
+                    description: Handle of the product
+                    type: string
+                weight:
+                    description: Weight of the product
+                    type: number
+                price:
+                    description: Price of the product
+                    type: number          
+            required:
+                - handle
+                - weight
+                - price
+  parameters:
+    handle:
+      description: test
+      in: path
+      name: handle
+      required: true
+      schema:
+        type: string
+
+paths:
+  /products/:
+    get:
+      description: GET the list of all products
+      responses:
+        '200':
+          description: list of products
+          content:
+            application/json:
+              example:
+              - handle: 'fcQP0BxIu6wk6lPBxID5'
+                weight: 36.1
+                price: 383.37
+
+    post:
+      description: POST a product
+      requestBody:
+        description: test
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+            example:
+              handle: 'fcQP0BxIu6wk6lPBxID5'
+              weight: 36.1
+              price: 383.37
+      responses:
+        '201':
+          description: created
+          headers:
+            Location:
+              description: new product
+              schema:
+                type: string
+        '400':
+          description: invalid body
+        '409':
+          description: already exists
+        '415':
+          description: wrong media type
+    

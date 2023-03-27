@@ -17,7 +17,7 @@ class ImageCollection(Resource):
     def post(self):
         print("Here")
         if 'file' not in request.files:
-            return Response("No file attached", 400, headers=dict(request.headers))
+            return Response("No file attached", 400, headers=dict(request.headers)) # Wrong way
         print("Here")
         file = request.files['file']
         filename = secure_filename(file.filename)
