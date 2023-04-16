@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 servers:
-- url: /
+  - url: /
 components:
   parameters:
     sensor:
@@ -18,6 +18,13 @@ components:
       required: true
       schema:
         type: string
+    image:
+      description: Selected image's unique name
+      in: path
+      name: image
+      required: true
+      schema:
+        type: string
   schemas:
     Sensor:
       properties:
@@ -28,8 +35,8 @@ components:
           description: Sensor's unique name
           type: string
       required:
-      - name
-      - model
+        - name
+        - model
       type: object
   securitySchemes:
     sensorhubKey:
@@ -55,17 +62,17 @@ paths:
     get:
       description: Get the list of managed sensors
       responses:
-        '200':
+        "200":
           description: List of sensors with shortened location info
           content:
             application/json:
               example:
-              - name: test-sensor-1
-                model: uo-test-sensor
-                location: test-site-a
-              - name: test-sensor-2
-                model: uo-test-sensor
-                location: null
+                - name: test-sensor-1
+                  model: uo-test-sensor
+                  location: test-site-a
+                - name: test-sensor-2
+                  model: uo-test-sensor
+                  location: null
     post:
       description: Create a new sensor
       requestBody:
@@ -73,31 +80,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Sensor'
+              $ref: "#/components/schemas/Sensor"
             example:
               name: new-test-sensor-1
               model: uo-test-sensor-plus
       responses:
-        '201':
+        "201":
           description: The sensor was created successfully
           headers:
-            Location: 
+            Location:
               description: URI of the new sensor
-              schema: 
+              schema:
                 type: string
-        '400':
+        "400":
           description: The request body was not valid
-        '409':
+        "409":
           description: A sensor with the same name already exists
-        '415':
+        "415":
           description: Wrong media type was used
   /sensors/{sensor}/:
     parameters:
-    - $ref: '#/components/parameters/sensor'
+      - $ref: "#/components/parameters/sensor"
     get:
       description: Get details of one sensor
       responses:
-        '200':
+        "200":
           description: Data of single sensor with extended location info
           content:
             application/json:
@@ -119,7 +126,7 @@ paths:
                     name: test-sensor-2
                     model: uo-test-sensor
                     location: null
-        '404':
+        "404":
           description: The sensor was not found
     put:
       description: Replace sensor's basic data with new values
@@ -128,25 +135,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Sensor'
+              $ref: "#/components/schemas/Sensor"
             example:
               name: new-test-sensor-1
               model: uo-test-sensor-plus
       responses:
-        '204':
+        "204":
           description: The sensor's attributes were updated successfully
-        '400':
+        "400":
           description: The request body was not valid
-        '404':
+        "404":
           description: The sensor was not found
-        '409':
+        "409":
           description: A sensor with the same name already exists
-        '415':
+        "415":
           description: Wrong media type was used
     delete:
-     description: Delete the selected sensor
-     responses:
-       '204':
-         description: The sensor was successfully deleted
-       '404':
-         description: The sensor was not found
+      description: Delete the selected sensor
+      responses:
+        "204":
+          description: The sensor was successfully deleted
+        "404":
+          description: The sensor was not found
