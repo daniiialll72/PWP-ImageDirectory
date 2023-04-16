@@ -1,0 +1,7 @@
+Flask
+Werkzeug
+mongoengine
+python-dotenv
+flask-cors
+flasgger
+pyyaml
