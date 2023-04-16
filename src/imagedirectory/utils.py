@@ -13,9 +13,12 @@ ALLOWED_EXTENSIONS = {'jpg', 'png'}
 
 class ImageConverter(BaseConverter):
     def to_python(self, id):
+        print("*******")
         db_model = models.Image.objects.get(id=id)
         if db_model is None:
             raise NotFound #TODO: Which one is best practice
+        print("&&&&&&&&&&&")
+        print(db_model.description)
         return db_model
         
     def to_url(self, db_model):

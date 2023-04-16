@@ -4,9 +4,12 @@ from imagedirectory import models
 from mongoengine import *
 from imagedirectory.constants import *
 from datetime import datetime
+from imagedirectory import utils
 
 class ReportedImageCollection(Resource):
     def post(self, image):
+        print("HEREHERE")
+        print(image.description)
         if not request.json:
             Response(status=415)
             
@@ -18,4 +21,8 @@ class ReportedImageCollection(Resource):
             created_at=datetime.now()
             )
         reportedImage.save()
-        return Response(status=201)
+        response = Response()
+        response.headers['Content-Type'] = "application/json"
+        response.status = 201
+        response.data = utils.wrap_response(message="image reported")
+        return response

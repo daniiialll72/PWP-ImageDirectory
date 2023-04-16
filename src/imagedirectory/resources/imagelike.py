@@ -4,6 +4,7 @@ from imagedirectory import models
 from mongoengine import *
 from datetime import datetime
 from imagedirectory.constants import TEST_USER_ID
+from imagedirectory import utils
 
 
 class ImageLikeCollection(Resource):
@@ -29,4 +30,10 @@ class ImageLikeCollection(Resource):
         if previous_like is None:
             return Response("No record exists", status=400)
         image.update(pull__likes=previous_like)
-        return Response(status=200)
+        response = Response()
+        response.headers['Content-Type'] = "application/json"
+        response.status = 200
+        response.data = utils.wrap_response(message="image liked")
+        return response
+        # return Response(status=200)
+
