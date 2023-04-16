@@ -44,19 +44,36 @@ class ImageCollection(Resource):
           return response
         except Exception as e:
           print("Error: ", e)
-          return Response(utils.wrap_response(data=str(e)), 500)
+          return Response(utils.wrap_error(error=str(e)), 500)
     
     # https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
     def post(self):
         """
         ---
         description: Get the list of users
-
+        requestBody:
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+                properties:
+                  file:
+                    type: string
+                    format: binary
+                  description:
+                    type: string
+                  tags:
+                    type: string
+        responses:
+          '200':
+            description: OK
+          '400':
+            description: Bad Request
+          '500':
+            description: Internal Server Error
         """
-        print("Here")
         if 'file' not in request.files:
             return Response("No file attached", 400, headers=dict(request.headers)) # Wrong way
-        print("Here")
         file = request.files['file']
         filename = secure_filename(file.filename)
         if filename == '':
@@ -89,6 +106,8 @@ class ImageCollection(Resource):
         image = models.Image()
         image.description = request.form.get('description')
         image.tags = tags_list
+        image.comments = []
+        image.likes = []
         image.created_at = datetime.now()
         image.file_content = models.FileContent(file_name=filename, storage_id=f'{generated_guid}{utils.get_file_extension(filename)}')
         try:
@@ -111,29 +130,35 @@ class ImageItem(Resource):
             description: Data of single sensor with extended location info
             content:
               application/json:
-                examples:
-                  deployed-sensor:
-                    description: A sensor that has been placed into a location
-                    value:
-                      name: test-sensor-1
-                      model: uo-test-sensor
-                      location:
-                        name: test-site-a
-                        latitude: 123.45
-                        longitude: 123.45
-                        altitude: 44.51
-                        description: in some random university hallway
-                  stored-sensor:
-                    description: A sensor that lies in the storage, currently unused
-                    value:
-                      name: test-sensor-2
-                      model: uo-test-sensor
-                      location: null
+                example:
+                  data:
+                    comments: []
+                    created_at: "2023-04-16 11:24:17.160000"
+                    description: "This is junge"
+                    id: "643bb0b1cefdbc83c5d61ac0"
+                    is_abused: false
+                    likes: []
+                    storage_id: "234462c1-a06e-46a0-9520-e063bcf2ce53.jpg"
+                    tags:
+                    - "tree"
+                    - "nature"
+                    - "woodland"
+                    - "holiday"
+                  error: null
+                  message: null
           '404':
-            description: The sensor was not found
+            description: The image was not found
         """
         print("No cached")
-        return Response(image.to_json(), status=200, headers=dict(request.headers))
+        try:
+          response = Response()
+          response.headers['Content-Type'] = "application/json"
+          response.status = 200
+          response.data = utils.wrap_response(data=viewmodels.convert_image(image))
+          return response
+        except Exception as e:
+          print("Error: ", e)
+          return Response(utils.wrap_error(error=str(e)), 500)
     
     def delete(self, image):
         utils.minio_client.remove_object("images", image.file_content.storage_id)
