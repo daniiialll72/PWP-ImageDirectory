@@ -32,7 +32,7 @@ class UserCollection(Resource):
           return response
         except Exception as e:
           print("Error: ", e)
-          return Response(utils.wrap_response(data=str(e)), 200)
+          return Response(utils.wrap_response(data=str(e)), 500)
 
     def post(self):
         """

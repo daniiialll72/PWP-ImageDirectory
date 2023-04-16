@@ -6,12 +6,23 @@ from werkzeug.utils import secure_filename
 from imagedirectory import utils
 from datetime import datetime
 from imagedirectory import cache
+from imagedirectory import viewmodels
+
 
 class ImageCollection(Resource):
     @cache.cached(timeout=300)
     def get(self):
         print("No cached")
-        return Response(models.Image.objects.to_json(), status=200, headers=dict([("Content-Type","application/json")]))
+        try:
+          images = models.Image.objects
+          response = Response()
+          response.headers['Content-Type'] = "application/json"
+          response.status = 200
+          response.data = utils.wrap_response(data=viewmodels.convert_images(images))
+          return response
+        except Exception as e:
+          print("Error: ", e)
+          return Response(utils.wrap_response(data=str(e)), 500)
     
     # https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
     def post(self):
