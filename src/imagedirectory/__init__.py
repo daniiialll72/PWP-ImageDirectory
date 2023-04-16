@@ -13,6 +13,7 @@ import datetime
 import json
 import logging
 from flask_caching import Cache
+from flasgger import Swagger, swag_from
 
 cache = Cache()
 
@@ -26,6 +27,13 @@ def create_app(test_config=None):
         # CACHE_REDIS_URL='redis://localhost:6379/0',
         CACHE_DEFAULT_TIMEOUT= 300
     )
+    
+    app.config["SWAGGER"] = {
+        "title": "Image Directory API",
+        "openapi": "3.0.3",
+        "uiversion": 3
+    }
+    swagger = Swagger(app, template_file="doc/imagedirectory.yml")
 
     logging.basicConfig(
     level=logging.DEBUG,
@@ -61,6 +69,11 @@ def create_app(test_config=None):
 
     from . import api
     app.register_blueprint(api.api_bp)
+    
+    # a simple page that says hello
+    @app.route('/')
+    def check():
+        return 'Health check! The app works!'
 
     # a simple page that says hello
     @app.route('/hello')
