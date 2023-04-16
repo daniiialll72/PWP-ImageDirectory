@@ -7,7 +7,7 @@ from imagedirectory import utils
 
 class UserCollection(Resource):
     def get(self):
-        """Returns the game by name or id.
+        """
         ---
         description: Get the list of users
         responses:
@@ -16,12 +16,18 @@ class UserCollection(Resource):
             content:
               application/json:
                 example:
-                - name: test-sensor-1
-                  model: uo-test-sensor
-                  location: test-site-a
-                - name: test-sensor-2
-                  model: uo-test-sensor
-                  location: null
+                - email: "evan@gmail.com"
+                  first_name: "Mehrdad"
+                  gender: "male"
+                  last_name: "Kaheh"
+                  password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6$a6c092e00c3da2009649b26d81617e533de24913ebfe3179ac1f4af81e57fd30"
+                  username: "Evan"
+                - email: "eggege@gmail.com"
+                  first_name: "Mehrdad"
+                  gender: "male"
+                  last_name: "Kaheh"
+                  password_hash: "pbkdf2:sha256:260000$bWcuBNkL0UKRTjp6$50d81ea5b010cb9132960530d736739c7e29449a3386cf242e67dbb5f26100cb"
+                  username: "efefefef"
         """
         try:
           users = models.User.objects
