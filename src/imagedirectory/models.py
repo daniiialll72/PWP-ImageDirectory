@@ -16,8 +16,7 @@ class Like(EmbeddedDocument):
 
 class Comment(EmbeddedDocument):
     id = ObjectIdField(required=True, 
-                        default=ObjectId,
-                        unique=True, 
+                        default=ObjectId, 
                         primary_key=True)
     user_id = ReferenceField(User)
     text = StringField(required=True)

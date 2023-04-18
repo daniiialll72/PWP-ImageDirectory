@@ -49,7 +49,7 @@ class UserCollection(Resource):
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Sensor'
+                $ref: '#/components/schemas/User'
               example:
                 username: mkaheh
                 email: kahe.mehrdad@gmail.com

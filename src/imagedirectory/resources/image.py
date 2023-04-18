@@ -8,7 +8,6 @@ from datetime import datetime
 from imagedirectory import cache
 from imagedirectory import viewmodels
 
-
 class ImageCollection(Resource):
     @cache.cached(timeout=300)
     def get(self):
@@ -44,7 +43,11 @@ class ImageCollection(Resource):
           return response
         except Exception as e:
           print("Error: ", e)
-          return Response(utils.wrap_error(error=str(e)), 500)
+          response = Response()
+          response.headers['Content-Type'] = "application/json"
+          response.status = 400
+          response.data = utils.wrap_response(error=str(e))
+          return response
     
     # https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
     def post(self):
@@ -106,16 +109,23 @@ class ImageCollection(Resource):
         image = models.Image()
         image.description = request.form.get('description')
         image.tags = tags_list
-        image.comments = []
-        image.likes = []
         image.created_at = datetime.now()
         image.file_content = models.FileContent(file_name=filename, storage_id=f'{generated_guid}{utils.get_file_extension(filename)}')
         try:
+            print(image.description)
             image.save()
         except Exception as e:
-            return Response(str(e), 400)
+            response = Response()
+            response.headers['Content-Type'] = "application/json"
+            response.status = 400
+            response.data = utils.wrap_response(error=str(e))
+            return response
 
-        return Response(status=201)
+        response = Response()
+        response.headers['Content-Type'] = "application/json"
+        response.status = 201
+        response.data = utils.wrap_response(message="A new image added")
+        return response
 
 class ImageItem(Resource):
     @cache.cached(timeout=300)
@@ -127,7 +137,7 @@ class ImageItem(Resource):
           - $ref: '#/components/parameters/image'
         responses:
           '200':
-            description: Data of single sensor with extended location info
+            description: Data of an image
             content:
               application/json:
                 example:
@@ -161,10 +171,74 @@ class ImageItem(Resource):
           return Response(utils.wrap_error(error=str(e)), 500)
     
     def delete(self, image):
-        utils.minio_client.remove_object("images", image.file_content.storage_id)
-        image.delete()
-        return Response(status=200, headers=dict(request.headers))
-    def put(self, image):
+        """
+        ---
+        description: Delete an image
+        parameters:
+          - $ref: '#/components/parameters/image'
+        responses:
+          '200':
+            description: Delete an image
+            content:
+              application/json:
+                example:
+                  data: null
+                  error: null
+                  message: Image is deleted
+          '404':
+            description: The image was not found
+        """
+        try:
+          utils.minio_client.remove_object("images", image.file_content.storage_id)
+          image.delete()
+          response = Response()
+          response.headers['Content-Type'] = "application/json"
+          response.status = 200
+          response.data = utils.wrap_response(message="Image has been deleted")
+          return response
+        except Exception as e:
+          print("Error: ", e)
+          response = Response()
+          response.headers['Content-Type'] = "application/json"
+          response.status = 404
+          response.data = utils.wrap_error(error="Image does not exist")
+          return response
+      
+    def patch(self, image):
+        """
+        ---
+        description: Change the image details
+        parameters:
+          - $ref: '#/components/parameters/image'
+        requestBody:
+          description: JSON document that contains fields of image that can be modified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+              example:
+                description: new description
+                tags: apple
+        responses:
+          '200':
+            description: Change the image details
+            content:
+              application/json:
+                example:
+                  data: null
+                  error: null
+                  message: image has been modified
+          '404':
+            description: The image was not found
+            content:
+              application/json:
+                example:
+                  data: null
+                  error: The image was not found
+                  message: null
+          '415':
+            description: The media type format is not json
+        """
         if not request.json:
             Response(status=415)
         description = request.json["description"]
@@ -173,4 +247,8 @@ class ImageItem(Resource):
         image.description = description
         image.tags = tags_string.replace(' ', '').split(',')
         image.save()
-        return Response(status=200)
+        response = Response()
+        response.headers['Content-Type'] = "application/json"
+        response.status = 200
+        response.data = utils.wrap_response(message="Image has been modified")
+        return response

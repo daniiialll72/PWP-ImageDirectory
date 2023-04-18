@@ -8,7 +8,6 @@ from imagedirectory import utils
 
 class ReportedImageCollection(Resource):
     def post(self, image):
-        print("HEREHERE")
         print(image.description)
         if not request.json:
             Response(status=415)

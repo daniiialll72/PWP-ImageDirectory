@@ -4,13 +4,6 @@ servers:
   - url: /
 components:
   parameters:
-    sensor:
-      description: Selected sensor's unique name
-      in: path
-      name: sensor
-      required: true
-      schema:
-        type: string
     user:
       description: Selected user's unique name
       in: path
@@ -26,134 +19,46 @@ components:
       schema:
         type: string
   schemas:
-    Sensor:
+    User:
       properties:
-        model:
-          description: Name of the sensor's model
+        username:
           type: string
-        name:
-          description: Sensor's unique name
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        password:
+          type: string
+        gender:
           type: string
       required:
-        - name
-        - model
+        - username
+        - email
+        - password
       type: object
-  securitySchemes:
-    sensorhubKey:
-      type: apiKey
-      name: Sensorhub-Api-Key
-      in: header
+    Image:
+      properties:
+        description:
+          type: string
+        tags:
+          type: string
+      type: object
+    ImageComment:
+      properties:
+        text:
+          type: string
+      type: object
 info:
-  title: Sensorhub Example
+  title: PWP - Image Directory
   version: 0.0.1
   description: |
-    This is an API example used in the Programmable Web Project course.
-    It stores data about sensors and where they have been deployed.
-  termsOfService: http://totally.not.placehold.er/
+    This is an API gateway for an application which is called image directory.
+    In this app, you can upload images and also like the images. You can also add comments to each image.
   contact:
-    url: http://totally.not.placehold.er/
-    email: pwp-course@lists.oulu.fi
-    name: PWP Staff List
+    email: mkaheh22@oulu.fi
+    name: Mehrdad Kaheh - The maintainer of the project
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
-paths:
-  /sensors/:
-    get:
-      description: Get the list of managed sensors
-      responses:
-        "200":
-          description: List of sensors with shortened location info
-          content:
-            application/json:
-              example:
-                - name: test-sensor-1
-                  model: uo-test-sensor
-                  location: test-site-a
-                - name: test-sensor-2
-                  model: uo-test-sensor
-                  location: null
-    post:
-      description: Create a new sensor
-      requestBody:
-        description: JSON document that contains basic data for a new sensor
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Sensor"
-            example:
-              name: new-test-sensor-1
-              model: uo-test-sensor-plus
-      responses:
-        "201":
-          description: The sensor was created successfully
-          headers:
-            Location:
-              description: URI of the new sensor
-              schema:
-                type: string
-        "400":
-          description: The request body was not valid
-        "409":
-          description: A sensor with the same name already exists
-        "415":
-          description: Wrong media type was used
-  /sensors/{sensor}/:
-    parameters:
-      - $ref: "#/components/parameters/sensor"
-    get:
-      description: Get details of one sensor
-      responses:
-        "200":
-          description: Data of single sensor with extended location info
-          content:
-            application/json:
-              examples:
-                deployed-sensor:
-                  description: A sensor that has been placed into a location
-                  value:
-                    name: test-sensor-1
-                    model: uo-test-sensor
-                    location:
-                      name: test-site-a
-                      latitude: 123.45
-                      longitude: 123.45
-                      altitude: 44.51
-                      description: in some random university hallway
-                stored-sensor:
-                  description: A sensor that lies in the storage, currently unused
-                  value:
-                    name: test-sensor-2
-                    model: uo-test-sensor
-                    location: null
-        "404":
-          description: The sensor was not found
-    put:
-      description: Replace sensor's basic data with new values
-      requestBody:
-        description: JSON document that contains new basic data for the sensor
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Sensor"
-            example:
-              name: new-test-sensor-1
-              model: uo-test-sensor-plus
-      responses:
-        "204":
-          description: The sensor's attributes were updated successfully
-        "400":
-          description: The request body was not valid
-        "404":
-          description: The sensor was not found
-        "409":
-          description: A sensor with the same name already exists
-        "415":
-          description: Wrong media type was used
-    delete:
-      description: Delete the selected sensor
-      responses:
-        "204":
-          description: The sensor was successfully deleted
-        "404":
-          description: The sensor was not found
