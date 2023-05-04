@@ -19,17 +19,19 @@ class Image():
 def convert_users(users):
     list = []
     for user in users:
-        new = User()
-        new.username = user.username
-        new.email = user.email
-        new.first_name = user.first_name
-        new.last_name = user.last_name
-        new.gender = user.gender
-        new.password_hash = user.password_hash
-        
-        list.append(new)
+        list.append(convert_user(user))
     
     return list
+
+def convert_user(user):
+    new = User()
+    new.username = user.username
+    new.email = user.email
+    new.first_name = user.first_name
+    new.last_name = user.last_name
+    new.gender = user.gender
+    new.password_hash = user.password_hash    
+    return new
 
 def convert_images(images):
     image_list = []

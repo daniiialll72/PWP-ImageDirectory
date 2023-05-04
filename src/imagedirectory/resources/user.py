@@ -127,27 +127,11 @@ class UserItem(Resource):
         responses:
           '200':
             description: Data of single sensor with extended location info
-            content:
-              application/json:
-                examples:
-                  deployed-sensor:
-                    description: A sensor that has been placed into a location
-                    value:
-                      name: test-sensor-1
-                      model: uo-test-sensor
-                      location:
-                        name: test-site-a
-                        latitude: 123.45
-                        longitude: 123.45
-                        altitude: 44.51
-                        description: in some random university hallway
-                  stored-sensor:
-                    description: A sensor that lies in the storage, currently unused
-                    value:
-                      name: test-sensor-2
-                      model: uo-test-sensor
-                      location: null
           '404':
             description: The sensor was not found
         """
-        return Response(user.to_json(), status=200, headers=dict(request.headers))
+        response = Response()
+        response.headers['Content-Type'] = "application/json"
+        response.status = 200
+        response.data = utils.wrap_response(data=viewmodels.convert_user(user))
+        return response

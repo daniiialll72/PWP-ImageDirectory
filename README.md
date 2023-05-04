@@ -22,7 +22,7 @@ In development mode, you can go to `src` directory and execute following command
 ```
 $ export FLASK_APP=imagedirectory
 $ export FLASK_ENV=development
-$ flask runn --port=5000
+$ flask run --port=5000
 ```
 
 ## Running in the production mode

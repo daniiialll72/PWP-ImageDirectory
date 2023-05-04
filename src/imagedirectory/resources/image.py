@@ -20,18 +20,21 @@ class ImageCollection(Resource):
             content:
               application/json:
                 example:
-                - email: "evan@gmail.com"
-                  first_name: "Mehrdad"
-                  gender: "male"
-                  last_name: "Kaheh"
-                  password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6$a6c092e00c3da2009649b26d81617e533de24913ebfe3179ac1f4af81e57fd30"
-                  username: "Evan"
-                - email: "eggege@gmail.com"
-                  first_name: "Mehrdad"
-                  gender: "male"
-                  last_name: "Kaheh"
-                  password_hash: "pbkdf2:sha256:260000$bWcuBNkL0UKRTjp6$50d81ea5b010cb9132960530d736739c7e29449a3386cf242e67dbb5f26100cb"
-                  username: "efefefef"
+                  data:
+                  - email: "evan@gmail.com"
+                    first_name: "Mehrdad"
+                    gender: "male"
+                    last_name: "Kaheh"
+                    password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6$a6c092e00c3da2009649b26d81617e533de24913ebfe3179ac1f4af81e57fd30"
+                    username: "Evan"
+                  - email: "eggege@gmail.com"
+                    first_name: "Mehrdad"
+                    gender: "male"
+                    last_name: "Kaheh"
+                    password_hash: "pbkdf2:sha256:260000$bWcuBNkL0UKRTjp6$50d81ea5b010cb9132960530d736739c7e29449a3386cf242e67dbb5f26100cb"
+                    username: "efefefef"
+                  message: null
+                  error: null
         """
         print("No cached")
         try:
@@ -70,10 +73,20 @@ class ImageCollection(Resource):
         responses:
           '200':
             description: OK
+            content:
+              application/json:
+                example:
+                  data: null
+                  message: A new image added
+                  error: null
           '400':
             description: Bad Request
-          '500':
-            description: Internal Server Error
+            content:
+              application/json:
+                example:
+                  data: null
+                  message: null
+                  error: Error message
         """
         if 'file' not in request.files:
             return Response("No file attached", 400, headers=dict(request.headers)) # Wrong way
