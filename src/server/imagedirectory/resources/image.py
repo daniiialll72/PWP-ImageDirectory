@@ -7,6 +7,7 @@ from imagedirectory import utils
 from datetime import datetime
 from imagedirectory import cache
 from imagedirectory import viewmodels
+from imagedirectory.services.mediamanager import MediaManager
 
 class ImageCollection(Resource):
     @cache.cached(timeout=300)
@@ -88,43 +89,18 @@ class ImageCollection(Resource):
                   message: null
                   error: Error message
         """
-        if 'file' not in request.files:
-            return Response("No file attached", 400, headers=dict(request.headers)) # Wrong way
+        mediamanger = MediaManager()
+        print("file type is: " , type(request.files['file']))
+        result = mediamanger.insertImage(request.files['file'])
         file = request.files['file']
         filename = secure_filename(file.filename)
-        if filename == '':
-            return Response("No file attached", 400, headers=dict(request.headers))
-        print(file.filename)
-        if not file:
-            return Response("No file attached", 400, headers=dict(request.headers))
-        if not utils.allowed_file(filename):
-            return Response("Format unaccepted", 400, headers=dict(request.headers))
-
-        found = utils.minio_client.bucket_exists("images")
-        if not found:
-            utils.minio_client.make_bucket("images")
-        else:
-            print("Bucket 'images' already exists")
-
-        file_size = len(file.stream.read())
-        file.seek(0)
-        generated_guid = utils.generate_guid()
-        minio_result = utils.minio_client.put_object(
-            "images", f'{generated_guid}{utils.get_file_extension(filename)}', file.stream, file_size
-        )
-        print(
-            "created {0} object; etag: {1}, version-id: {2}".format(
-                minio_result.object_name, minio_result.etag, minio_result.version_id,
-            ),
-        )
-
         tags_string = request.form.get('tags')
         tags_list = tags_string.replace(' ', '').split(',')
         image = models.Image()
         image.description = request.form.get('description')
         image.tags = tags_list
         image.created_at = datetime.now()
-        image.file_content = models.FileContent(file_name=filename, storage_id=f'{generated_guid}{utils.get_file_extension(filename)}')
+        image.file_content = models.FileContent(file_name=filename, storage_id=result)
         try:
             print(image.description)
             image.save()
@@ -203,7 +179,8 @@ class ImageItem(Resource):
             description: The image was not found
         """
         try:
-          utils.minio_client.remove_object("images", image.file_content.storage_id)
+          mediamanger = MediaManager()
+          mediamanger.deleteImage(image.file_content.storage_id)
           image.delete()
           response = Response()
           response.headers['Content-Type'] = "application/json"

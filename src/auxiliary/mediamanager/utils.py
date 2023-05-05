@@ -27,3 +27,25 @@ minio_client = Minio(
     secret_key="VxI9Ig0huEvN07seO168TY6E3eRDZUge",
     secure=False
 )
+
+class ResponseModel:
+    data: object = None
+    message: str = None
+    error: str = None
+    def __init__(self, message = None, data = None, error = None):
+        self.message = message
+        self.data = data
+        self.error = error
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
+
+def wrap_response(message = None, data = None):
+    res = ResponseModel(message = message, data = data)
+    return res.toJSON()
+
+
+def wrap_error(error):
+    res = ResponseModel(error = error)
+    return res.toJSON()

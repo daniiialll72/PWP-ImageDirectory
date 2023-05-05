@@ -25,10 +25,17 @@ For keeping the images in a secure and performant way, we have chosen MINIO, whi
 
 In the flask side, we approached a neat RESTful mechanism. All the entities have their own resources and respective models. We have employed flask_restful to handle all the routings and flask blueprints.
 
-In development mode, you can go to `src` directory and execute following commands
+In development mode, you can go to `src/server/imagedirectory` directory and execute following commands
 
 ```
 $ export FLASK_APP=imagedirectory
+$ export FLASK_ENV=development
+$ flask run --port=5000
+```
+
+For the _Media Manager_ auxiliary service, you should go to `src/auxiliary/mediamanager` directory and execute the following commands:
+```
+$ export FLASK_APP=mediamanager
 $ export FLASK_ENV=development
 $ flask run --port=5000
 ```
