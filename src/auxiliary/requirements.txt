@@ -1,0 +1,11 @@
+gunicorn[gevent]
+Flask==2.2.3
+Werkzeug==2.2.2
+mongoengine==0.27.0
+python-dotenv==0.21.1
+flask-cors==3.0.10
+flasgger==0.9.5
+pyyaml==5.3.1
+minio==7.1.13
+flask-restful==0.3.9
+Flask-Caching==2.0.2
