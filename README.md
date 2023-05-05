@@ -26,8 +26,14 @@ $ flask run --port=5000
 ```
 
 ## Running in the production mode
-In order to run the application you just need to install docker on the target machine. Afterwards, by executing the following commands, all the requirements will be run on respective docker container
+In order to run the application you just need to install docker on the target machine. Afterwards, by executing the following commands, all the requirements will be run on respective docker container.
 
+To run docker container of flask application:
+```
+docker compose -f docker-compose-app.yml -p imagedirectory-app up
+```
+
+To run docker containers of other infras (such as minio, mongodb, redis, etc)
 ```
 docker compose up --build -d
 ```
@@ -35,5 +41,7 @@ docker compose up --build -d
 In order to stop the application run the following commands
 
 ```
+docker compose -f docker-compose-app.yml -p imagedirectory-app up
+
 docker compose down
 ```

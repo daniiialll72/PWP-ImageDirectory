@@ -105,6 +105,7 @@ class ImageCollection(Resource):
             utils.minio_client.make_bucket("images")
         else:
             print("Bucket 'images' already exists")
+
         file_size = len(file.stream.read())
         file.seek(0)
         generated_guid = utils.generate_guid()
