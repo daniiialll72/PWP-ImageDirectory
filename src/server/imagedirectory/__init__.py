@@ -1,25 +1,19 @@
 import os
-from flask import Flask, request, Response
-import pprint
-from flask_restful import Api, Resource
-from . import models
+from flask import Flask
 from mongoengine import *
-from minio import Minio
-from werkzeug.utils import secure_filename
-import uuid
-from werkzeug.routing import BaseConverter
-from werkzeug.exceptions import NotFound
-import datetime
-import json
 import logging
 from flask_caching import Cache
-from flasgger import Swagger, swag_from
+from flasgger import Swagger
+from flask_cors import CORS
 
 cache = Cache()
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+
+    CORS(app)
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         CACHE_TYPE='SimpleCache',
@@ -52,7 +46,7 @@ def create_app(test_config=None):
             username=username,
             password=password,
             host=uri)
-    
+
     cache.init_app(app)
 
     if test_config is None:
@@ -62,7 +56,7 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
-    
+
     from . import utils
     app.url_map.converters["image"] = utils.ImageConverter
     app.url_map.converters["user"] = utils.UserConverter
