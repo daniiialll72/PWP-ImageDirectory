@@ -23,8 +23,8 @@ def get_file_extension(filename):
 
 minio_client = Minio(
     "86.50.229.208:9000",
-    access_key="8UQvmZYlLMmbdGw4",
-    secret_key="VxI9Ig0huEvN07seO168TY6E3eRDZUge",
+    access_key="64aHv2etWwD2Y1M4",
+    secret_key="bE2gqJKNSwLOITjCfckJPVRySpiUkluv",
     secure=False
 )
 
