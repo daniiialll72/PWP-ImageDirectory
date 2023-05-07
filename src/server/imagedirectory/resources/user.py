@@ -1,11 +1,17 @@
+"""
+This module provides the api facilities for the user resources.
+"""
 from flask import request, Response
 from flask_restful import Resource
-from imagedirectory import models
-from imagedirectory import viewmodels
-from mongoengine import *
-from imagedirectory import utils
+from mongoengine import errors
+
+from imagedirectory.models import User
+from imagedirectory import viewmodels, utils
 
 class UserCollection(Resource):
+    """
+    Resource class for managing the Users.
+    """
     def get(self):
         """
         ---
@@ -20,25 +26,25 @@ class UserCollection(Resource):
                   first_name: "Mehrdad"
                   gender: "male"
                   last_name: "Kaheh"
-                  password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6$a6c092e00c3da2009649b26d81617e533de24913ebfe3179ac1f4af81e57fd30"
+                  password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6..."
                   username: "Evan"
                 - email: "eggege@gmail.com"
                   first_name: "Mehrdad"
                   gender: "male"
                   last_name: "Kaheh"
-                  password_hash: "pbkdf2:sha256:260000$bWcuBNkL0UKRTjp6$50d81ea5b010cb9132960530d736739c7e29449a3386cf242e67dbb5f26100cb"
+                  password_hash: "pbkdf2:sha256:260000$bWcuBNkL0UKRTjp6..."
                   username: "efefefef"
         """
         try:
-          users = models.User.objects
-          response = Response()
-          response.headers['Content-Type'] = "application/json"
-          response.status = 200
-          response.data = utils.wrap_response(data=viewmodels.convert_users(users))
-          return response
-        except Exception as e:
-          print("Error: ", e)
-          return Response(utils.wrap_response(data=str(e)), 500)
+            users = User.objects
+            response = Response()
+            response.headers['Content-Type'] = "application/json"
+            response.status = 200
+            response.data = utils.wrap_response(data=viewmodels.convert_users(users))
+            return response
+        except errors.MongoEngineException as error:
+            print("Error: ", error)
+            return Response(utils.wrap_response(data=str(error)), 500)
 
     def post(self):
         """
@@ -74,27 +80,23 @@ class UserCollection(Resource):
         """
         if not request.json:
             return Response(status=415)
-        
         username = request.json["username"]
         email = request.json["email"]
         first_name = request.json["first_name"]
         last_name = request.json["last_name"]
         password = request.json["password"]
         gender = request.json["gender"]
-        
         if not utils.validate_username(username):
             response = Response()
             response.status = 400
             response.data = utils.wrap_error(error = "username is invalid")
             return response
-        
         if utils.check_username_exist(username):
             response = Response()
             response.status = 400
             response.data = utils.wrap_error(error = "username already exists")
             return response
-        
-        user = models.User(
+        user = User(
             email = email,
             username = username,
             first_name = first_name,
@@ -104,20 +106,22 @@ class UserCollection(Resource):
             )
         try:
             user.save()
-        except Exception as e:
+        except errors.MongoEngineException as ex:
             response = Response()
             response.status = 400
-            response.data = utils.wrap_error(error = str(e))
+            response.data = utils.wrap_error(error = str(ex))
             return response
-        
         response = Response()
         response.headers['Location'] = f'/api/users/{user.username}/'
         response.headers['Content-Type'] = "application/json"
         response.status = 201
         response.data = utils.wrap_response(message="User created")
         return response
-    
+
 class UserItem(Resource):
+    """
+    Resource class for managing the single user.
+    """
     def get(self, user):
         """
         ---

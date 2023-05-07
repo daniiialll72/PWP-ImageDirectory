@@ -1,12 +1,16 @@
+"""
+This module provides the api facilities for the image comment resource.
+"""
 from flask import request, Response
 from flask_restful import Resource
 from imagedirectory import models
-from mongoengine import *
 from imagedirectory.constants import TEST_USER_ID
 from imagedirectory import utils
 
-
 class ImageCommentCollection(Resource):
+    """
+    Resource class for managing the image collections.
+    """
     def post(self, image):
         """
         ---
@@ -44,7 +48,7 @@ class ImageCommentCollection(Resource):
         if not request.json:
             Response(status=415)
         text = request.json["text"]
-        user = models.User.objects.get(id=TEST_USER_ID) # TODO: Should be changed with Authenticated user id
+        user = models.User.objects.get(id=TEST_USER_ID)
         comment = models.Comment(user_id=user.id, text=text)
         image.comments.append(comment)
         image.save()
@@ -55,6 +59,9 @@ class ImageCommentCollection(Resource):
         return response
     
 class ImageCommentItem(Resource):
+    """
+    Resource class for managing the image items.
+    """
     def delete(self, image, comment_id):
         """
         ---

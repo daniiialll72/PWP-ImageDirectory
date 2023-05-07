@@ -1,7 +1,9 @@
-from flask import request, Response
+"""
+This module provides the api facilities for the image like resource.
+"""
+from flask import Response
 from flask_restful import Resource
 from imagedirectory import models
-from mongoengine import *
 from datetime import datetime
 from imagedirectory.constants import TEST_USER_ID
 from imagedirectory import utils
@@ -30,8 +32,8 @@ class ImageLikeCollection(Resource):
                   data: null
                   error: The image was not found
                   message: null
-        """    
-        user = models.User.objects.get(id=TEST_USER_ID) # TODO: Should be changed with Authenticated user id
+        """
+        user = models.User.objects.get(id=TEST_USER_ID)
         previous_like = None
         for like in image.likes:
             if like.userId.id == user.id:
@@ -50,7 +52,7 @@ class ImageLikeCollection(Resource):
         response.status = 201
         response.data = utils.wrap_response(message="Image is liked")
         return response
-    
+
     def delete(self, image):
         """
         ---
@@ -75,7 +77,7 @@ class ImageLikeCollection(Resource):
                   error: The image was not found
                   message: null
         """
-        user = models.User.objects.get(id=TEST_USER_ID) # TODO: Should be changed with Authenticated user id
+        user = models.User.objects.get(id=TEST_USER_ID)
         previous_like = None
         for like in image.likes:
             if like.user_id.id == user.id:
@@ -92,4 +94,3 @@ class ImageLikeCollection(Resource):
         response.status = 200
         response.data = utils.wrap_response(message="image liked")
         return response
-
