@@ -1,15 +1,23 @@
-from flask import Flask, request, Response
-from flask_restful import Api, Resource
-from imagedirectory import models
-from mongoengine import *
+"""
+This module provides the api facilities for the image resource.
+"""
+
+from flask import request, Response
+from flask_restful import Resource
 from werkzeug.utils import secure_filename
-from imagedirectory import utils
 from datetime import datetime
+from mongoengine import errors
+
+from imagedirectory import utils
 from imagedirectory import cache
+from imagedirectory import models
 from imagedirectory import viewmodels
 from imagedirectory.services.mediamanager import MediaManager
 
 class ImageCollection(Resource):
+    """
+    Resource class for managing the images.
+    """
     @cache.cached(timeout=300)
     def get(self):
         """
@@ -26,33 +34,33 @@ class ImageCollection(Resource):
                     first_name: "Mehrdad"
                     gender: "male"
                     last_name: "Kaheh"
-                    password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6$a6c092e00c3da2009649b26d81617e533de24913ebfe3179ac1f4af81e57fd30"
+                    password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6..."
                     username: "Evan"
                   - email: "eggege@gmail.com"
                     first_name: "Mehrdad"
                     gender: "male"
                     last_name: "Kaheh"
-                    password_hash: "pbkdf2:sha256:260000$bWcuBNkL0UKRTjp6$50d81ea5b010cb9132960530d736739c7e29449a3386cf242e67dbb5f26100cb"
+                    password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6..."
                     username: "efefefef"
                   message: null
                   error: null
         """
         print("No cached")
         try:
-          images = models.Image.objects
-          response = Response()
-          response.headers['Content-Type'] = "application/json"
-          response.status = 200
-          response.data = utils.wrap_response(data=viewmodels.convert_images(images))
-          return response
-        except Exception as e:
-          print("Error: ", e)
-          response = Response()
-          response.headers['Content-Type'] = "application/json"
-          response.status = 400
-          response.data = utils.wrap_response(error=str(e))
-          return response
-    
+            images = models.Image.objects
+            response = Response()
+            response.headers['Content-Type'] = "application/json"
+            response.status = 200
+            response.data = utils.wrap_response(data=viewmodels.convert_images(images))
+            return response
+        except errors.MongoEngineException as ex:
+            print("Error: ", ex)
+            response = Response()
+            response.headers['Content-Type'] = "application/json"
+            response.status = 400
+            response.data = utils.wrap_error(error=str(ex))
+            return response
+
     # https://flask.palletsprojects.com/en/2.2.x/patterns/fileuploads/
     def post(self):
         """
@@ -104,11 +112,11 @@ class ImageCollection(Resource):
         try:
             print(image.description)
             image.save()
-        except Exception as e:
+        except errors.MongoEngineException as error:
             response = Response()
             response.headers['Content-Type'] = "application/json"
             response.status = 400
-            response.data = utils.wrap_response(error=str(e))
+            response.data = utils.wrap_error(error=str(error))
             return response
 
         response = Response()
@@ -118,6 +126,9 @@ class ImageCollection(Resource):
         return response
 
 class ImageItem(Resource):
+    """
+    Resource class for managing the image items.
+    """
     @cache.cached(timeout=300)
     def get(self, image):
         """
@@ -151,15 +162,15 @@ class ImageItem(Resource):
         """
         print("No cached")
         try:
-          response = Response()
-          response.headers['Content-Type'] = "application/json"
-          response.status = 200
-          response.data = utils.wrap_response(data=viewmodels.convert_image(image))
-          return response
-        except Exception as e:
-          print("Error: ", e)
-          return Response(utils.wrap_error(error=str(e)), 500)
-    
+            response = Response()
+            response.headers['Content-Type'] = "application/json"
+            response.status = 200
+            response.data = utils.wrap_response(data=viewmodels.convert_image(image))
+            return response
+        except errors.MongoEngineException as ex:
+            print("Error: ", ex)
+            return Response(utils.wrap_error(error=str(ex)), 500)
+
     def delete(self, image):
         """
         ---
@@ -179,22 +190,22 @@ class ImageItem(Resource):
             description: The image was not found
         """
         try:
-          mediamanger = MediaManager()
-          mediamanger.deleteImage(image.file_content.storage_id)
-          image.delete()
-          response = Response()
-          response.headers['Content-Type'] = "application/json"
-          response.status = 200
-          response.data = utils.wrap_response(message="Image has been deleted")
-          return response
-        except Exception as e:
-          print("Error: ", e)
-          response = Response()
-          response.headers['Content-Type'] = "application/json"
-          response.status = 404
-          response.data = utils.wrap_error(error="Image does not exist")
-          return response
-      
+            mediamanger = MediaManager()
+            mediamanger.deleteImage(image.file_content.storage_id)
+            image.delete()
+            response = Response()
+            response.headers['Content-Type'] = "application/json"
+            response.status = 200
+            response.data = utils.wrap_response(message="Image has been deleted")
+            return response
+        except errors.MongoEngineException as ex:
+            print("Error: ", ex)
+            response = Response()
+            response.headers['Content-Type'] = "application/json"
+            response.status = 404
+            response.data = utils.wrap_error(error="Image does not exist")
+            return response
+
     def patch(self, image):
         """
         ---

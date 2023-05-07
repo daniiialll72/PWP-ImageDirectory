@@ -30,14 +30,14 @@ In development mode, you can go to `src/server/imagedirectory` directory and exe
 ```
 $ export FLASK_APP=imagedirectory
 $ export FLASK_ENV=development
-$ flask run --port=5000
+$ flask run --port=5003
 ```
 
 For the _Media Manager_ auxiliary service, you should go to `src/auxiliary/mediamanager` directory and execute the following commands:
 ```
 $ export FLASK_APP=mediamanager
 $ export FLASK_ENV=development
-$ flask run --port=5000
+$ flask run --port=5004
 ```
 
 ## Running in the production mode
@@ -45,7 +45,11 @@ In order to run the application you just need to install docker on the target ma
 
 To run docker container of flask application:
 ```
-docker compose -f docker-compose-app.yml -p imagedirectory-app up
+docker compose -f docker-compose-app.yml -p imagedirectory-app up -d --build
+```
+
+```
+docker compose -f docker-compose-media-manager.yml -p mediamanager-app up -d --build
 ```
 
 To run docker containers of other infras (such as minio, mongodb, redis, etc)
@@ -56,7 +60,18 @@ docker compose up --build -d
 In order to stop the application run the following commands
 
 ```
-docker compose -f docker-compose-app.yml -p imagedirectory-app up
+docker compose -f docker-compose-app.yml -p imagedirectory-app down
+
+docker compose -f docker-compose-media-manager.yml -p mediamanager-app down
 
 docker compose down
+```
+
+## Code Quality
+We have checked the code quality with [Pylint]()
+
+Go to the directory `src/server/` and run the following commands
+```
+pylint ./imagedirectory
+pylint ./mediamanager
 ```

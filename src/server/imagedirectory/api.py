@@ -1,5 +1,7 @@
+"""
+This module provides resource mappings and blueprints of the application.
+"""
 from flask_restful import Api
-from mongoengine import *
 from flask import Blueprint
 from imagedirectory.resources.image import ImageCollection, ImageItem
 from imagedirectory.resources.user import UserCollection, UserItem
