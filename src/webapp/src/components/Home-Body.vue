@@ -3,7 +3,7 @@
     <!-- <Tags /> -->
 
     <div class="column">
-      <p style="color: white">Featured Categories</p>
+      <p style="color: white">Images</p>
       <hr class="divider" />
       <div class="cards">
         <v-row>
@@ -49,9 +49,7 @@
 
 <script>
 import axios from "axios";
-// import Tags from "./Home-Tags";
 import "../assets/css/styles.scss";
-// import { BIconTrashFill } from "bootstrap-vue";
 
 export default {
   name: "Home-Body",
@@ -60,42 +58,8 @@ export default {
     isModalVisible: false,
     title: "list of items",
     items: [],
-    // cards: [
-    //   {
-    //     title: "Card 1",
-    //     description: "This is the first card",
-    //     imageUrl: "https://picsum.photos/200/300",
-    //   },
-    //   {
-    //     title: "Card 2",
-    //     description: "This is the second card",
-    //     imageUrl: "https://picsum.photos/200/300",
-    //   },
-    //   {
-    //     title: "Card 3",
-    //     description: "This is the third card",
-    //     imageUrl: "https://picsum.photos/200/300",
-    //   },
-    //   {
-    //     title: "Card 4",
-    //     description: "This is the fourth card",
-    //     imageUrl: "https://picsum.photos/200/300",
-    //   },
-    //   {
-    //     title: "Card 5",
-    //     description: "This is the fifth card",
-    //     imageUrl: "https://picsum.photos/200/300",
-    //   },
-    //   {
-    //     title: "Card 6",
-    //     description: "This is the sixth card",
-    //     imageUrl: "https://picsum.photos/200/300",
-    //   },
-    // ],
   }),
-  components: {
-    // Tags,
-  },
+  components: {},
   mounted() {
     axios
       .get("http://86.50.229.208:5000/api/images/")
@@ -130,21 +94,6 @@ export default {
           if (index !== -1) {
             this.items.splice(index, 1);
           }
-
-          // fetch the updated list of images
-          // axios
-          //   .get("http://86.50.229.208:5000/api/images/")
-          //   .then((response) => {
-          //     this.items = response.data.data;
-
-          //     console.log(
-          //       "is the api working with api?",
-          //       JSON.parse(JSON.stringify(this.items.data))
-          //     );
-          //   })
-          //   .catch((error) => {
-          //     console.log(error);
-          //   });
         })
         .catch((error) => {
           console.error(error);
@@ -284,6 +233,7 @@ export default {
 }
 .card {
   transition: transform 0.2s; /* Animation */
+  background-color: rgb(56, 56, 56);
 }
 .card:hover {
   transform: scale(1.1);
