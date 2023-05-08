@@ -19,6 +19,7 @@
       </v-btn>
     </div>
   </div>
+
   <div class="row dropdown py-6">
     <form @submit.prevent="submitForm">
       <div>
@@ -33,7 +34,16 @@
         <label for="description-input">Description:</label>
         <input type="text" id="description-input" v-model="description" />
       </div>
-      <v-btn type="submit">Upload</v-btn>
+      <v-btn
+        color="#959595"
+        rounded="pill"
+        width="7rem"
+        height="3rem"
+        type="submit"
+        class="mt-2"
+      >
+        <p style="color: #fff">Upload</p>
+      </v-btn>
     </form>
   </div>
 </template>
@@ -131,6 +141,22 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #eea7a7ad;
+  /* text-align: left; */
+}
+
+input {
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
+
+  padding: 0.5rem;
+  width: 100%;
   background-color: white;
+  border-radius: 20px;
+}
+label {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+  color: white;
 }
 </style>
