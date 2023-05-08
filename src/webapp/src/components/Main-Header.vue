@@ -1,10 +1,11 @@
 <template>
-  <div class="row d-flex justify-space-between">
-    <div class="column-logo">
-      <p class="logo-font">Image Directory</p>
-    </div>
+  <div>
+    <div class="row d-flex justify-space-between">
+      <div class="column-logo">
+        <p class="logo-font">Image Directory</p>
+      </div>
 
-    <!-- <div class="column-search">
+      <!-- <div class="column-search">
       <v-text-field
         label="Search"
         prepend-inner-icon="mdi-magnify"
@@ -13,42 +14,48 @@
       ></v-text-field>
     </div> -->
 
-    <div class="column-button" @click="isDropdownVisible = !isDropdownVisible">
-      <v-btn color="#EEA7A7" rounded="pill" width="10rem" height="3rem">
-        <p style="color: #fff">{{ isDropdownVisible ? "Close" : "Upload" }}</p>
-      </v-btn>
-    </div>
-  </div>
-  <transition name="fade">
-    <div class="row dropdown py-6" v-show="isDropdownVisible">
-      <h1>Upload your photo here</h1>
-      <form ref="uploadForm" @submit.prevent="uploadPhoto">
-        <div>
-          <label for="photo">Choose a photo:</label>
-          <input type="file" id="photo" @change="handleFileUpload" />
-        </div>
-        <div>
-          <label for="tags-input">Tags:</label>
-          <input type="text" id="tags-input" v-model="tags" />
-        </div>
-        <div>
-          <label for="description-input">Description:</label>
-          <input type="text" id="description-input" v-model="description" />
-        </div>
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-        <v-btn
-          color="#959595"
-          rounded="pill"
-          width="7rem"
-          height="3rem"
-          type="submit"
-          class="mt-2"
-        >
-          <p style="color: #fff">Upload</p>
+      <div
+        class="column-button"
+        @click="isDropdownVisible = !isDropdownVisible"
+      >
+        <v-btn color="#EEA7A7" rounded="pill" width="10rem" height="3rem">
+          <p style="color: #fff">
+            {{ isDropdownVisible ? "Close" : "Upload" }}
+          </p>
         </v-btn>
-      </form>
+      </div>
     </div>
-  </transition>
+    <transition name="fade">
+      <div class="row dropdown py-6" v-show="isDropdownVisible">
+        <h1>Upload your photo here</h1>
+        <form ref="uploadForm" @submit.prevent="uploadPhoto">
+          <div>
+            <label for="photo">Choose a photo:</label>
+            <input type="file" id="photo" @change="handleFileUpload" />
+          </div>
+          <div>
+            <label for="tags-input">Tags:</label>
+            <input type="text" id="tags-input" v-model="tags" />
+          </div>
+          <div>
+            <label for="description-input">Description:</label>
+            <input type="text" id="description-input" v-model="description" />
+          </div>
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+          <v-btn
+            color="#959595"
+            rounded="pill"
+            width="7rem"
+            height="3rem"
+            type="submit"
+            class="mt-2"
+          >
+            <p style="color: #fff">Upload</p>
+          </v-btn>
+        </form>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>
