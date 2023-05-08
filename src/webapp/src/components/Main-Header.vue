@@ -15,13 +15,14 @@
 
     <div class="column-button" @click="isDropdownVisible = !isDropdownVisible">
       <v-btn color="#EEA7A7" rounded="pill" width="10rem" height="3rem">
-        <p style="color: #fff">Upload</p>
+        <p style="color: #fff">{{ isDropdownVisible ? "Close" : "Upload" }}</p>
       </v-btn>
     </div>
   </div>
 
-  <div class="row dropdown py-6">
-    <form @submit.prevent="submitForm">
+  <div class="row dropdown py-6" v-show="isDropdownVisible">
+    <h1>Upload your photo here</h1>
+    <form @submit.prevent="uploadPhoto">
       <div>
         <label for="photo">Choose a photo:</label>
         <input type="file" id="photo" @change="handleFileUpload" />
@@ -49,18 +50,18 @@
 </template>
 
 <script>
+import axios from "axios";
 import "../assets/css/styles.scss";
 // import VTextField from "vuetify";
 import VBtn from "vuetify";
-import axios from "axios";
 
 export default {
   name: "Main-Header",
 
   data() {
     return {
-      isDropdownVisible: false,
-      photo: null,
+      isDropdownVisible: true,
+      file: null,
       tags: "",
       description: "",
     };
@@ -74,22 +75,49 @@ export default {
       this.isDropdownVisible = true;
       console.log("open is working");
     },
-    async submitForm() {
+    handleFileUpload(event) {
+      this.file = event.target.files[0];
+    },
+
+    async uploadPhoto() {
       try {
         const formData = new FormData();
-        formData.append("photo", this.photo);
+        formData.append("file", this.file);
         formData.append("tags", this.tags);
         formData.append("description", this.description);
-        const response = await axios.post("/api/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await axios.post(
+          "http://86.50.229.208:5000/api/images/",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         console.log(response.data);
       } catch (error) {
         console.error(error);
+        console.log("we have an error");
       }
     },
+    // async uploadPhoto() {
+    //   const formData = new FormData();
+    //   formData.append("file", this.file);
+    //   formData.append("tags", this.tags);
+    //   formData.append("description", this.description);
+    //   try {
+    //     const response = await fetch(
+    //       "http://86.50.229.208:5000/api/images/",
+    //       {
+    //         method: "POST",
+    //         body: formData,
+    //       }
+    //     );
+    //     console.log(response);
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // },
   },
 };
 </script>
@@ -139,17 +167,25 @@ export default {
 /* DropDown for Upload */
 .dropdown {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #eea7a7ad;
   /* text-align: left; */
 }
+.dropdown h1 {
+  margin-bottom: 1rem;
+  color: rgb(99, 98, 98);
+  text-transform: capitalize;
+  font-family: "tangerine";
+  font-weight: bold;
+  /* background-color: grey; */
+}
 
 input {
   margin-top: 0.4rem;
   margin-bottom: 0.4rem;
-
-  padding: 0.5rem;
+  padding: 0.5rem 2rem;
   width: 100%;
   background-color: white;
   border-radius: 20px;
