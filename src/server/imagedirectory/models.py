@@ -1,7 +1,19 @@
 """
 This module provides a set of classes which are used in the application.
 """
-from mongoengine import Document, StringField, EmailField, EmbeddedDocument, ReferenceField, DateTimeField, ObjectIdField, ListField, EmbeddedDocumentField, BooleanField
+import hashlib
+from mongoengine import (
+    BooleanField,
+    DateTimeField,
+    Document,
+    EmailField,
+    EmbeddedDocument,
+    EmbeddedDocumentField,
+    ListField,
+    ObjectIdField,
+    ReferenceField,
+    StringField,
+)
 from bson.objectid import ObjectId
 
 from imagedirectory.constants import USERNAME_REGEX
@@ -154,4 +166,19 @@ class ReportedImage(Document):
     reason = StringField(required=True, max_length=150)
     accepted = BooleanField()
     created_at = DateTimeField(required=True)
-    
+
+class ApiKey(Document):
+    """
+    A class representing a API Keys. From example 
+    https://lovelace.oulu.fi/ohjelmoitava-web/ohjelmoitava-web/implementing-rest-apis-with-flask/#api-authentication
+
+    Attributes
+    ----------
+    key : str
+        The key is in an string hashed format.
+    """
+    key = StringField(required=True, max_length=64, unique=True)
+
+    @staticmethod
+    def key_hash(key):
+        return hashlib.sha256(key.encode()).digest()

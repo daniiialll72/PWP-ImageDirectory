@@ -6,14 +6,49 @@ import uuid
 from minio import Minio
 import re
 import json
-from werkzeug.exceptions import NotFound
+from flask import request
+from werkzeug.exceptions import NotFound, Forbidden
 from werkzeug.security import generate_password_hash
 from werkzeug.routing import BaseConverter
+import secrets
 
 from imagedirectory.constants import USERNAME_REGEX
 from imagedirectory import models
 
 ALLOWED_EXTENSIONS = {'jpg', 'png'}
+
+def require_key(func):
+    """
+    A decorator function that checks if an API key is present in the request header and if it is valid. 
+
+    Args:
+    - func: the function to be decorated
+
+    Returns:
+    - wrapper function that either calls the decorated function if the API key is valid, or raises a Forbidden error if it is not.
+    """
+    def wrapper(*args, **kwargs):
+        """
+        Inner function that checks if an API key is present in the request header and if it is valid.
+
+        Raises:
+        - Forbidden: If the API key is missing or invalid.
+
+        Returns:
+        - The decorated function if the API key is valid.
+        """
+        if request.headers.get("Api-Key") is None:
+            raise Forbidden
+        key_hash = models.ApiKey.key_hash(request.headers.get("Api-Key").strip()).hex()
+        print(key_hash)
+        db_key = models.ApiKey.objects(key=key_hash).first()
+        if db_key is None:
+            raise Forbidden
+        print(db_key.key)
+        if secrets.compare_digest(key_hash, db_key.key):
+            return func(*args, **kwargs)
+        raise Forbidden
+    return wrapper
 
 class ImageConverter(BaseConverter):
     """

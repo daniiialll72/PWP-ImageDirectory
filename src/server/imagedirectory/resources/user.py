@@ -12,6 +12,8 @@ class UserCollection(Resource):
     """
     Resource class for managing the Users.
     """
+    
+    @utils.require_key
     def get(self):
         """
         ---
