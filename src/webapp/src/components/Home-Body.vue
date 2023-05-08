@@ -1,6 +1,6 @@
 <template>
-  <div class="row container">
-    <Tags />
+  <div class="row">
+    <!-- <Tags /> -->
 
     <div class="column">
       <p style="color: white">Featured Categories</p>
@@ -10,20 +10,19 @@
           <v-col v-for="(item, id) in items" :key="id" :cols="4">
             <v-card class="my-4 card">
               <v-img class="image" :src="item.url"></v-img>
-              <v-col class="footer-img-container">
-                <v-card-title class="card-title">{{ item.tags }}</v-card-title>
+              <v-col col="9" class="footer-img-container">
+                <v-card-title class="card-title"
+                  >#{{ item.tags.join(", #") }}</v-card-title
+                >
                 <v-card-text class="card-text">{{
                   item.description
                 }}</v-card-text>
               </v-col>
-              <v-col>
-                <v-card-actions class="justify-space-between btns">
-                  <v-btn @click="openModal" class="edit-btn btn">Edit</v-btn>
-                  <v-btn class="delete-btn btn" @click="deleteImage(item.id)"
-                    >Delete</v-btn
-                  >
-                </v-card-actions>
-              </v-col>
+              <v-card-actions class="btns">
+                <v-btn class="delete-btn btn" @click="deleteImage(item.id)"
+                  >Delete</v-btn
+                >
+              </v-card-actions>
             </v-card>
             <!-- POP UP  -->
             <div
@@ -50,7 +49,7 @@
 
 <script>
 import axios from "axios";
-import Tags from "./Home-Tags";
+// import Tags from "./Home-Tags";
 import "../assets/css/styles.scss";
 // import { BIconTrashFill } from "bootstrap-vue";
 
@@ -95,7 +94,7 @@ export default {
     // ],
   }),
   components: {
-    Tags,
+    // Tags,
   },
   mounted() {
     axios
@@ -163,14 +162,14 @@ export default {
   position: absolute;
   bottom: 0;
   width: 100%;
+  padding: 0;
 }
-.btns {
-  background-color: orange;
-}
+
 .btn {
   background-color: white;
   font-size: 0.6rem;
   font-weight: bold;
+  position: absolute;
 }
 .btn:hover {
   background-color: gray;
@@ -259,6 +258,8 @@ export default {
 .row {
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
 }
 .row-card {
