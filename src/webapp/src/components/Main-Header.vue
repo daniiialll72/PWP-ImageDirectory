@@ -19,34 +19,36 @@
       </v-btn>
     </div>
   </div>
-
-  <div class="row dropdown py-6" v-show="isDropdownVisible">
-    <h1>Upload your photo here</h1>
-    <form @submit.prevent="uploadPhoto">
-      <div>
-        <label for="photo">Choose a photo:</label>
-        <input type="file" id="photo" @change="handleFileUpload" />
-      </div>
-      <div>
-        <label for="tags-input">Tags:</label>
-        <input type="text" id="tags-input" v-model="tags" />
-      </div>
-      <div>
-        <label for="description-input">Description:</label>
-        <input type="text" id="description-input" v-model="description" />
-      </div>
-      <v-btn
-        color="#959595"
-        rounded="pill"
-        width="7rem"
-        height="3rem"
-        type="submit"
-        class="mt-2"
-      >
-        <p style="color: #fff">Upload</p>
-      </v-btn>
-    </form>
-  </div>
+  <transition name="fade">
+    <div class="row dropdown py-6" v-show="isDropdownVisible">
+      <h1>Upload your photo here</h1>
+      <form @submit.prevent="uploadPhoto">
+        <div>
+          <label for="photo">Choose a photo:</label>
+          <input type="file" id="photo" @change="handleFileUpload" />
+        </div>
+        <div>
+          <label for="tags-input">Tags:</label>
+          <input type="text" id="tags-input" v-model="tags" />
+        </div>
+        <div>
+          <label for="description-input">Description:</label>
+          <input type="text" id="description-input" v-model="description" />
+        </div>
+        <v-btn
+          color="#959595"
+          rounded="pill"
+          width="7rem"
+          height="3rem"
+          type="submit"
+          class="mt-2"
+          @click="isDropdownVisible = !isDropdownVisible"
+        >
+          <p style="color: #fff">Upload</p>
+        </v-btn>
+      </form>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -60,7 +62,7 @@ export default {
 
   data() {
     return {
-      isDropdownVisible: true,
+      isDropdownVisible: false,
       file: null,
       tags: "",
       description: "",
@@ -100,24 +102,6 @@ export default {
         console.log("we have an error");
       }
     },
-    // async uploadPhoto() {
-    //   const formData = new FormData();
-    //   formData.append("file", this.file);
-    //   formData.append("tags", this.tags);
-    //   formData.append("description", this.description);
-    //   try {
-    //     const response = await fetch(
-    //       "http://86.50.229.208:5000/api/images/",
-    //       {
-    //         method: "POST",
-    //         body: formData,
-    //       }
-    //     );
-    //     console.log(response);
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // },
   },
 };
 </script>
@@ -194,5 +178,13 @@ label {
   font-weight: bold;
   margin-bottom: 0.3rem;
   color: white;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
