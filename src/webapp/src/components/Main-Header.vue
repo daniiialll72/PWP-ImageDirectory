@@ -22,7 +22,7 @@
   <transition name="fade">
     <div class="row dropdown py-6" v-show="isDropdownVisible">
       <h1>Upload your photo here</h1>
-      <form @submit.prevent="uploadPhoto">
+      <form ref="uploadForm" @submit.prevent="uploadPhoto">
         <div>
           <label for="photo">Choose a photo:</label>
           <input type="file" id="photo" @change="handleFileUpload" />
@@ -35,6 +35,7 @@
           <label for="description-input">Description:</label>
           <input type="text" id="description-input" v-model="description" />
         </div>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <v-btn
           color="#959595"
           rounded="pill"
@@ -42,7 +43,6 @@
           height="3rem"
           type="submit"
           class="mt-2"
-          @click="isDropdownVisible = !isDropdownVisible"
         >
           <p style="color: #fff">Upload</p>
         </v-btn>
@@ -66,6 +66,7 @@ export default {
       file: null,
       tags: "",
       description: "",
+      formIsEmpty: false,
     };
   },
   components: {
@@ -83,6 +84,12 @@ export default {
 
     async uploadPhoto() {
       try {
+        // checking for empty fields
+        if (!this.file || !this.tags || !this.description) {
+          this.formIsEmpty = "true";
+          console.log("the fields are empy");
+          throw new Error("Please fill all required fields");
+        }
         const formData = new FormData();
         formData.append("file", this.file);
         formData.append("tags", this.tags);
@@ -97,9 +104,11 @@ export default {
           }
         );
         console.log(response.data);
+        // to reset the form
+        this.$refs.uploadForm.reset();
       } catch (error) {
         console.error(error);
-        console.log("we have an error");
+        alert(error.message);
       }
     },
   },
@@ -155,7 +164,6 @@ export default {
   justify-content: center;
   align-items: center;
   background-color: #eea7a7ad;
-  /* text-align: left; */
 }
 .dropdown h1 {
   margin-bottom: 1rem;
@@ -186,5 +194,10 @@ label {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+.error-message {
+  color: red;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 </style>
