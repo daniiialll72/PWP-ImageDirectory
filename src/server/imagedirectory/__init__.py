@@ -8,6 +8,18 @@ from flask_cors import CORS
 
 cache = Cache()
 
+def connect_db():
+    # Connect to MongoDB
+    username = 'admin'
+    password = '1234qwerty'
+    server = '86.50.229.208'
+    db_name = 'image_directory'
+    uri = f'mongodb://{username}:{password}@{server}:27017/{db_name}?authSource=admin&retryWrites=true&w=majority'
+    connect(db=db_name, 
+            username=username,
+            password=password,
+            host=uri)
+
 def create_app(test_config=None):
     """
     create and configure the app
@@ -39,15 +51,7 @@ def create_app(test_config=None):
     logger = logging.getLogger()
 
     # Connect to MongoDB
-    username = 'admin'
-    password = '1234qwerty'
-    server = '86.50.229.208'
-    db_name = 'image_directory'
-    uri = f'mongodb://{username}:{password}@{server}:27017/{db_name}?authSource=admin&retryWrites=true&w=majority'
-    connect(db=db_name, 
-            username=username,
-            password=password,
-            host=uri)
+    connect_db()
 
     cache.init_app(app)
 
