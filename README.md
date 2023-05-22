@@ -67,8 +67,26 @@ docker compose -f docker-compose-media-manager.yml -p mediamanager-app down
 docker compose down
 ```
 
+## Test Cases
+
+To test and see the coverage status, we have used Pytest. Pytest is a powerful and popular testing framework for Python. It provides a simple and intuitive way to write tests, making it an excellent choice for testing HTTP RESTful APIs. In this section, we'll explore how you can use Pytest to write comprehensive tests for your APIs.
+
+### Installation
+Before getting started, make sure you have Pytest installed. You can install it using pip:
+
+```
+pip install pytest
+```
+
+### Running
+You can use the following commands to run the test cases on your machine. First you need to locate `src/server` directory, and then run these commands:
+```
+coverage run -m pytest
+coverage report
+```
+
 ## Code Quality
-We have checked the code quality with [Pylint]()
+We have checked the code quality with [Pylint](https://pypi.org/project/pylint/)
 
 Go to the directory `src/server/` and run the following commands
 ```
