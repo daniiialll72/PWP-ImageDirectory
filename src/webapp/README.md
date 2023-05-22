@@ -1,24 +1,54 @@
 # imagedirectory
 
+This Project allows the user to view all images with their respective tags and descriptions from the API. Users can also upload new photos and delete photos from the API.
+
+## Prerequisites
+
+Before running the project, ensure that you have the following installed:
+
+    Node.js (version 12 or higher)
+    NPM (version 6 or higher)
+
 ## Project setup
+
+1. Clone the project repository to your local machine:
+
 ```
-yarn install
+git clone https://github.com/daniiialll72/PWP-ImageDirectory/tree/main/src/webapp
 ```
 
-### Compiles and hot-reloads for development
+2. Navigate to the project directory:
+
 ```
-yarn serve
+cd webapp
 ```
 
-### Compiles and minifies for production
+3. install project dependencies
+
 ```
-yarn build
+npm install
 ```
 
-### Lints and fixes files
+### Usage
+
+To run the project, follow these steps: 4. Buil the project:
+
 ```
-yarn lint
+npm run build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+5. Run the project
+
+```
+npm run serve
+```
+
+6. Open your web browser and navigate to http://localhost:8080/
+
+### Features
+
+This Vue project includes the following features:
+
+- View all images with their respective tags - and descriptions from the API.
+- Upload new photos to the API.
+- Delete photos from the API.
