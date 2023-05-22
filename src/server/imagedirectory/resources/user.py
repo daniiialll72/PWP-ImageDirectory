@@ -48,6 +48,7 @@ class UserCollection(Resource):
             print("Error: ", error)
             return Response(utils.wrap_response(data=str(error)), 500)
 
+    @utils.require_key
     def post(self):
         """
         ---
@@ -134,7 +135,7 @@ class UserItem(Resource):
           '200':
             description: Data of single sensor with extended location info
           '404':
-            description: The sensor was not found
+            description: The user was not found
         """
         response = Response()
         response.headers['Content-Type'] = "application/json"

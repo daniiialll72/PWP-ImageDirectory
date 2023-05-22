@@ -12,7 +12,7 @@ from werkzeug.security import generate_password_hash
 from werkzeug.routing import BaseConverter
 import secrets
 
-from imagedirectory.constants import USERNAME_REGEX
+from imagedirectory import constants
 from imagedirectory import models
 
 ALLOWED_EXTENSIONS = {'jpg', 'png'}
@@ -76,11 +76,14 @@ class ImageConverter(BaseConverter):
         Raises:
             NotFound: If no Image object is found with the given ID.
         """
-        db_model = models.Image.objects.get(id=id)
-        if db_model is None:
+        try:
+            db_model = models.Image.objects.get(id=id)
+            if db_model is None:
+                raise NotFound
+            print(db_model.description)
+            return db_model
+        except Exception as e:
             raise NotFound
-        print(db_model.description)
-        return db_model
 
     def to_url(self, db_model):
         """
@@ -120,10 +123,13 @@ class UserConverter(BaseConverter):
         Raises:
             NotFound: If no User object is found with the given username.
         """
-        db_model = models.User.objects(username=username).first()
-        if db_model is None:
+        try:
+            db_model = models.User.objects(username=username).first()
+            if db_model is None:
+                raise NotFound
+            return db_model
+        except Exception as e:
             raise NotFound
-        return db_model
 
     def to_url(self, db_model):
         """
@@ -183,7 +189,7 @@ def validate_username(username):
     Returns:
         bool: True if the given username is valid, else False.
     """
-    pattern = USERNAME_REGEX
+    pattern = constants.USERNAME_REGEX
     if re.match(pattern, username):
         return True
     return False

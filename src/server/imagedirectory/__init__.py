@@ -62,7 +62,6 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
-
     from . import utils
     app.url_map.converters["image"] = utils.ImageConverter
     app.url_map.converters["user"] = utils.UserConverter

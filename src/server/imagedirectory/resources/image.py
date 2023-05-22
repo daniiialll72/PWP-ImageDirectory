@@ -22,10 +22,10 @@ class ImageCollection(Resource):
     def get(self):
         """
         ---
-        description: Get the list of users
+        description: Get the list of images
         responses:
           '200':
-            description: List of users
+            description: List of images
             content:
               application/json:
                 example:
@@ -65,7 +65,7 @@ class ImageCollection(Resource):
     def post(self):
         """
         ---
-        description: Get the list of users
+        description: Insert a new image
         requestBody:
           content:
             multipart/form-data:
@@ -80,7 +80,7 @@ class ImageCollection(Resource):
                   tags:
                     type: string
         responses:
-          '200':
+          '201':
             description: OK
             content:
               application/json:
