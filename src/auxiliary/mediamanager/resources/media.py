@@ -1,13 +1,24 @@
+"""
+This module provides a set of functions and utilities.
+"""
 from flask import request, Response
 from flask_restful import Resource
 from mongoengine import *
-
 from flask import make_response
 from werkzeug.utils import secure_filename
+
 from mediamanager import utils
 
 class MediaCollection(Resource):
     def post(self):
+        """
+        Post an image into storage based on its storage ID.
+        
+        Returns
+        -------
+        flask.Response
+            The image file as a response object with the appropriate content type.
+        """
         if 'file' not in request.files:
             return Response("No file attached", 400, headers=dict(request.headers)) # Wrong way TODO
         file = request.files['file']
@@ -47,26 +58,42 @@ class MediaCollection(Resource):
 
 class MediaItem(Resource):
     def get(self, storage_id):
-        # Retrieve the image data from MinIO
+        """
+        Retrieve an image from storage based on its storage ID.
+
+        Parameters
+        ----------
+        storage_id : str
+            The ID of the image in the storage.
+
+        Returns
+        -------
+        flask.Response
+            The image file as a response object with the appropriate content type.
+        """
         try:
             image_data = utils.minio_client.get_object('images', storage_id).read()
         except Exception as err:
             print(err)
             return f"No file with this id exists.", 400
-
-        # Create a Flask response with the image data
         response = make_response(image_data)
-
-        # Set the Content-Type header to indicate the image file format
         response.headers.set('Content-Type', 'image/jpeg')
-
-        # Set the Content-Disposition header to suggest that the image should be downloaded as a file
-        # response.headers.set('Content-Disposition', 'attachment', filename='image.jpg')
-
-        # Return the Flask response
         return response
 
     def delete(self, storage_id):
+        """
+        Delete an image from storage based on its storage ID.
+
+        Parameters
+        ----------
+        storage_id : str
+            The ID of the image in the storage.
+
+        Returns
+        -------
+        flask.Response
+            A response indicating the success or failure of the deletion operation.
+        """
         try:
             utils.minio_client.remove_object("images", storage_id)
         except Exception as err:

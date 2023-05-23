@@ -6,9 +6,7 @@ import json
 import io
 from datetime import datetime
 
-from imagedirectory.models import Image, ApiKey, User, FileContent
-        
-IMAGE_ID = ""
+from imagedirectory.models import Image, ApiKey, User, FileContent, Comment
 
 @pytest.fixture
 def client():
@@ -25,6 +23,10 @@ def client():
     
     os.close(db_fd)
     os.unlink(db_fname)
+
+@pytest.fixture
+def test_image():
+    return Image.objects().first()
     
 def _populate_db():
     # Remove all the records in the database
@@ -42,17 +44,16 @@ def _populate_db():
     user.password_hash = "HashedPassword"
     user.save()
     
-    
     # Create image
     image = Image()
     image.user_id = user.id
     image.description = "A cute rabbit"
     image.tags = "animal, cute, rabbit".replace(' ', '').split(',')
     image.created_at = datetime.now()
+    comment1 = Comment(user_id=user.id, text="This is a great image!")
+    image.comments.append(comment1)
     image.file_content = FileContent(file_name="rabbit.jpg", storage_id="aaaabbbbccccdddd")
     image.save()
-    
-    IMAGE_ID = str(image.id)
     
     return
 
@@ -156,14 +157,97 @@ class TestImageCollection(object):
         assert resp.status_code == 200
 
 class TestImageItem(object):
-    RESOURCE_URL = f"/api/images/{IMAGE_ID}"
-    
-    def test_get_expect_200(self, client):
-        resp = client.get(self.RESOURCE_URL)
+    def test_get_expect_200(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id)
+        resp = client.get(RESOURCE_URL)
         assert resp.status_code == 200
-    print("****************")
-    def test_get_expect_404(self, client):
-        resp = client.get(self.RESOURCE_URL+"fs")
+        
+    def test_get_expect_404(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id)
+        resp = client.get(RESOURCE_URL+"123")
         assert resp.status_code == 404
     
+    def test_patch_expect_404(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id)
+        resp = client.patch(RESOURCE_URL+"123")
+        assert resp.status_code == 404
+        
+    def test_patch_expect_400(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id)
+        resp = client.patch(RESOURCE_URL)
+        assert resp.status_code == 400
+        
+    def test_patch_expect_200(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id)
+        payload = {
+            "description": "new one",
+            "tags": "animal",
+        }
+        resp = client.patch(RESOURCE_URL, json=payload)
+        assert resp.status_code == 200
+        
+        resp = client.get(RESOURCE_URL)
+        assert resp.status_code == 200
+        data = json.loads(resp.data.decode())
+        assert data['data']['description'] == "new one"
+        
+    def test_delete_expect_404(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id)
+        resp = client.delete(RESOURCE_URL+"123")
+        assert resp.status_code == 404
     
+    def test_delete_expect_404(self, client, test_image):
+        resp = client.delete("/api/images/" + str(test_image.id))
+        assert resp.status_code == 200
+        
+class TestImageLike(object):
+    def test_post_expect_200_400(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id) + '/likes/'
+        resp = client.post(RESOURCE_URL)
+        assert resp.status_code == 201
+        
+        resp = client.post(RESOURCE_URL)
+        assert resp.status_code == 400
+        
+    def test_delete_expect_404(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id) + '/likes/'
+        resp = client.delete(RESOURCE_URL)
+        assert resp.status_code == 404
+        
+    def test_delete_expect_200(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id) + '/likes/'
+        resp = client.post(RESOURCE_URL)
+        assert resp.status_code == 201
+        
+        RESOURCE_URL = "/api/images/" + str(test_image.id) + '/likes/'
+        resp = client.delete(RESOURCE_URL)
+        assert resp.status_code == 200
+    
+class TestImageComment(object):
+    def test_post_expect_400(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id) + '/comments/'
+        resp = client.post(RESOURCE_URL)
+        assert resp.status_code == 400
+        
+    def test_post_expect_200(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id) + '/comments/'
+        payload = {
+            "text": "Here is my comment"
+        }
+        resp = client.post(RESOURCE_URL, json=payload)
+        assert resp.status_code == 201
+        
+class TestImageComment(object):
+    def test_post_expect_400(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id) + '/comments/'
+        resp = client.post(RESOURCE_URL)
+        assert resp.status_code == 400
+        
+    def test_delete_expect_200(self, client, test_image):
+        RESOURCE_URL = "/api/images/" + str(test_image.id) + '/comments/' + str(test_image.comments[0].id)
+        resp = client.delete(RESOURCE_URL)
+        assert resp.status_code == 200
+        
+        resp = client.delete(RESOURCE_URL)
+        assert resp.status_code == 404
+        
