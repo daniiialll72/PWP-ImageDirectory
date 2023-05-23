@@ -33,10 +33,10 @@ class ImageLikeCollection(Resource):
                   error: The image was not found
                   message: null
         """
-        user = models.User.objects.get(id=TEST_USER_ID)
+        user = models.User.objects.first()
         previous_like = None
         for like in image.likes:
-            if like.userId.id == user.id:
+            if like.user_id.id == user.id:
                 previous_like = like
         if previous_like is not None:
             response = Response()
@@ -77,7 +77,7 @@ class ImageLikeCollection(Resource):
                   error: The image was not found
                   message: null
         """
-        user = models.User.objects.get(id=TEST_USER_ID)
+        user = models.User.objects.first()
         previous_like = None
         for like in image.likes:
             if like.user_id.id == user.id:

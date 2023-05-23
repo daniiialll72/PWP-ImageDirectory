@@ -169,7 +169,7 @@ class ImageItem(Resource):
             return response
         except errors.MongoEngineException as ex:
             print("Error: ", ex)
-            return Response(utils.wrap_error(error=str(ex)), 500)
+            return Response(utils.wrap_error(error=str(ex)), 400)
 
     def delete(self, image):
         """
@@ -202,8 +202,8 @@ class ImageItem(Resource):
             print("Error: ", ex)
             response = Response()
             response.headers['Content-Type'] = "application/json"
-            response.status = 404
-            response.data = utils.wrap_error(error="Image does not exist")
+            response.status = 400
+            response.data = utils.wrap_error(error="Image has been already deleted")
             return response
 
     def patch(self, image):

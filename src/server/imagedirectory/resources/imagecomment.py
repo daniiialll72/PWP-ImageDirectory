@@ -4,7 +4,6 @@ This module provides the api facilities for the image comment resource.
 from flask import request, Response
 from flask_restful import Resource
 from imagedirectory import models
-from imagedirectory.constants import TEST_USER_ID
 from imagedirectory import utils
 
 class ImageCommentCollection(Resource):
@@ -48,7 +47,7 @@ class ImageCommentCollection(Resource):
         if not request.json:
             Response(status=415)
         text = request.json["text"]
-        user = models.User.objects.get(id=TEST_USER_ID)
+        user = models.User.objects.first()
         comment = models.Comment(user_id=user.id, text=text)
         image.comments.append(comment)
         image.save()

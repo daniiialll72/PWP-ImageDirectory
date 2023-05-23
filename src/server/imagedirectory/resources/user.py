@@ -46,7 +46,7 @@ class UserCollection(Resource):
             return response
         except errors.MongoEngineException as error:
             print("Error: ", error)
-            return Response(utils.wrap_response(data=str(error)), 500)
+            return Response(utils.wrap_response(data=str(error)), 400)
 
     @utils.require_key
     def post(self):
