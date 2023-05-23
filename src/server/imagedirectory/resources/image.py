@@ -18,7 +18,7 @@ class ImageCollection(Resource):
     """
     Resource class for managing the images.
     """
-    @cache.cached(timeout=300)
+    @cache.cached(timeout=30)
     def get(self):
         """
         ---
@@ -30,20 +30,27 @@ class ImageCollection(Resource):
               application/json:
                 example:
                   data:
-                  - email: "evan@gmail.com"
-                    first_name: "Mehrdad"
-                    gender: "male"
-                    last_name: "Kaheh"
-                    password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6..."
-                    username: "Evan"
-                  - email: "eggege@gmail.com"
-                    first_name: "Mehrdad"
-                    gender: "male"
-                    last_name: "Kaheh"
-                    password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6..."
-                    username: "efefefef"
-                  message: null
+                    - comments: []
+                      created_at: "2023-05-23 11:43:25.271000"
+                      description: "A cute rabbit"
+                      id: "646ca6dd52321cb454374db9"
+                      is_abused: false
+                      likes: []
+                      tags:
+                        - "animal"
+                        - "cute"
+                        - "rabbit"
+                      url: "http://86.50.229.208:5001/api/media/aaaabbbbccccdddd"
                   error: null
+                  message: null
+          '400':
+            description: error message
+            content:
+              application/json:
+                example:
+                  data: null
+                  error: error message
+                  message: null
         """
         print("No cached")
         try:
@@ -95,7 +102,7 @@ class ImageCollection(Resource):
                 example:
                   data: null
                   message: null
-                  error: Error message
+                  error: error message
         """
         mediamanger = MediaManager()
         print("file type is: " , type(request.files['file']))
@@ -129,7 +136,7 @@ class ImageItem(Resource):
     """
     Resource class for managing the image items.
     """
-    @cache.cached(timeout=300)
+    @cache.cached(timeout=30)
     def get(self, image):
         """
         ---
@@ -143,18 +150,18 @@ class ImageItem(Resource):
               application/json:
                 example:
                   data:
-                    comments: []
-                    created_at: "2023-04-16 11:24:17.160000"
-                    description: "This is junge"
-                    id: "643bb0b1cefdbc83c5d61ac0"
-                    is_abused: false
-                    likes: []
-                    storage_id: "234462c1-a06e-46a0-9520-e063bcf2ce53.jpg"
-                    tags:
-                    - "tree"
-                    - "nature"
-                    - "woodland"
-                    - "holiday"
+                    - comments: []
+                      created_at: "2023-04-16 11:24:17.160000"
+                      description: "This is junge"
+                      id: "643bb0b1cefdbc83c5d61ac0"
+                      is_abused: false
+                      likes: []
+                      storage_id: "234462c1-a06e-46a0-9520-e063bcf2ce53.jpg"
+                      tags:
+                      - "tree"
+                      - "nature"
+                      - "woodland"
+                      - "holiday"
                   error: null
                   message: null
           '404':
@@ -232,12 +239,6 @@ class ImageItem(Resource):
                   message: image has been modified
           '404':
             description: The image was not found
-            content:
-              application/json:
-                example:
-                  data: null
-                  error: The image was not found
-                  message: null
           '415':
             description: The media type format is not json
         """

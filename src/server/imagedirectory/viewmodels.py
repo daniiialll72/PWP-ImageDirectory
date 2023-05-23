@@ -110,7 +110,14 @@ def convert_image(image):
     new_image.description = image.description
     new_image.tags = image.tags
     new_image.likes = image.likes
-    new_image.comments = image.comments
+    new_image.comments = []
+    for comment in image.comments:
+        new_image.comments.append({ "id": str(comment.id), "user": str(comment.user_id.id), "text": comment.text})
+    
+    new_image.likes = []
+    for like in image.likes:
+        new_image.likes.append({ "user": str(like.user_id.id)})
+    
     new_image.created_at = str(image.created_at)
     new_image.is_abused = image.is_abused
     new_image.url = f'{MEDIA_MANAGER_URL}/api/media/{image["file_content"]["storage_id"]}'

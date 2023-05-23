@@ -24,18 +24,13 @@ class UserCollection(Resource):
             content:
               application/json:
                 example:
-                - email: "evan@gmail.com"
-                  first_name: "Mehrdad"
-                  gender: "male"
-                  last_name: "Kaheh"
-                  password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6..."
-                  username: "Evan"
-                - email: "eggege@gmail.com"
-                  first_name: "Mehrdad"
-                  gender: "male"
-                  last_name: "Kaheh"
-                  password_hash: "pbkdf2:sha256:260000$bWcuBNkL0UKRTjp6..."
-                  username: "efefefef"
+                  data:
+                  - email: "mehrdad@gmail.com"
+                    first_name: "Mehrdad"
+                    gender: "male"
+                    last_name: "Kaheh"
+                    password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6..."
+                    username: "mehrdad"
         """
         try:
             users = User.objects
@@ -133,7 +128,17 @@ class UserItem(Resource):
           - $ref: '#/components/parameters/user'
         responses:
           '200':
-            description: Data of single sensor with extended location info
+            description: List of users
+            content:
+              application/json:
+                example:
+                  data:
+                  - email: "mehrdad@gmail.com"
+                    first_name: "Mehrdad"
+                    gender: "male"
+                    last_name: "Kaheh"
+                    password_hash: "pbkdf2:sha256:260000$N33Rqt3K6Ha8MTz6..."
+                    username: "mehrdad"
           '404':
             description: The user was not found
         """
@@ -142,3 +147,57 @@ class UserItem(Resource):
         response.status = 200
         response.data = utils.wrap_response(data=viewmodels.convert_user(user))
         return response
+      
+    def patch(self, user):
+        """
+        ---
+        description: Change the user details
+        parameters:
+          - $ref: '#/components/parameters/user'
+        requestBody:
+          description: JSON document that contains fields of user that can be modified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                first_name: John
+                last_name: Doe
+                gender: male
+        responses:
+          '200':
+            description: Change the user details
+            content:
+              application/json:
+                example:
+                  data: null
+                  error: null
+                  message: yser has been modified
+          '404':
+            description: The image was not found
+          '415':
+            description: The media type format is not json
+        """
+        if not request.json:
+            Response(status=415)
+        first_name = request.json["first_name"]
+        last_name = request.json["last_name"]
+        gender = request.json["gender"]
+        
+        if gender not in ["male", "female"]:
+          response = Response()
+          response.headers['Content-Type'] = "application/json"
+          response.status = 400
+          response.data = utils.wrap_error(error="Gender should be male or female")
+          return response 
+
+        user.first_name = first_name
+        user.last_name = last_name
+        user.gender = gender
+        user.save()
+        response = Response()
+        response.headers['Content-Type'] = "application/json"
+        response.status = 200
+        response.data = utils.wrap_response(message="User has been modified")
+        return response
+

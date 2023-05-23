@@ -26,12 +26,6 @@ class ImageLikeCollection(Resource):
                   message: Image is liked
           '404':
             description: The image was not found
-            content:
-              application/json:
-                example:
-                  data: null
-                  error: The image was not found
-                  message: null
         """
         user = models.User.objects.first()
         previous_like = None
@@ -70,12 +64,15 @@ class ImageLikeCollection(Resource):
                   message: Like is deleted
           '404':
             description: The image was not found
+          '400':
+            description: image has been likeed before
             content:
               application/json:
                 example:
                   data: null
-                  error: The image was not found
+                  error: error message
                   message: null
+            
         """
         user = models.User.objects.first()
         previous_like = None

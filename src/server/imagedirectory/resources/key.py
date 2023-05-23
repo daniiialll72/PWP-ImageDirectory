@@ -18,9 +18,7 @@ class APIKeyCollection(Resource):
         description: Create a new api key
         responses:
           '200':
-            description: Data of single sensor with extended location info
-          '404':
-            description: The sensor was not found
+            description: Create a new api key
         """
         token = secrets.token_urlsafe()
         key_hash = models.ApiKey.key_hash(token).hex()

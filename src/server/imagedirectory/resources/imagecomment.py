@@ -35,12 +35,6 @@ class ImageCommentCollection(Resource):
                   message: Comment is added
           '404':
             description: The image was not found
-            content:
-              application/json:
-                example:
-                  data: null
-                  error: The image was not found
-                  message: null
           '415':
             description: The media type format is not json
         """
@@ -81,13 +75,7 @@ class ImageCommentItem(Resource):
                   error: null
                   message: Comment is deleted
           '404':
-            description: The image or comment was not found
-            content:
-              application/json:
-                example:
-                  data: null
-                  error: The image or comment was not found
-                  message: null
+            description: The image was not found
         """
         previous_comment = None
         for comment in image.comments:
