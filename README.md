@@ -34,6 +34,7 @@ $ flask run --port=5003
 ```
 
 For the _Media Manager_ auxiliary service, you should go to `src/auxiliary` directory and execute the following commands:
+
 ```
 $ export FLASK_APP=mediamanager
 $ export FLASK_ENV=development
@@ -41,9 +42,11 @@ $ flask run --port=5004
 ```
 
 ## Running in the production mode
+
 In order to run the application you just need to install docker on the target machine. Afterwards, by executing the following commands, all the requirements will be run on respective docker container.
 
 To run docker container of flask application:
+
 ```
 docker compose -f docker-compose-app.yml -p imagedirectory-app up -d --build
 ```
@@ -53,6 +56,7 @@ docker compose -f docker-compose-media-manager.yml -p mediamanager-app up -d --b
 ```
 
 To run docker containers of other infras (such as minio, mongodb, redis, etc)
+
 ```
 docker compose up --build -d
 ```
@@ -72,6 +76,7 @@ docker compose down
 To test and see the coverage status, we have used Pytest. Pytest is a powerful and popular testing framework for Python. It provides a simple and intuitive way to write tests, making it an excellent choice for testing HTTP RESTful APIs. In this section, we'll explore how you can use Pytest to write comprehensive tests for your APIs.
 
 ### Installation
+
 Before getting started, make sure you have Pytest installed. You can install it using pip:
 
 ```
@@ -79,17 +84,74 @@ pip install pytest
 ```
 
 ### Running
+
 You can use the following commands to run the test cases on your machine. First you need to locate `src/server` directory, and then run these commands:
+
 ```
 coverage run -m pytest
 coverage report
 ```
 
 ## Code Quality
+
 We have checked the code quality with [Pylint](https://pypi.org/project/pylint/)
 
 Go to the directory `src/server/` and run the following commands
+
 ```
 pylint ./imagedirectory
 pylint ./mediamanager
 ```
+
+## Running the Client
+
+### Prerequisites
+
+Before running the project, ensure that you have the following installed:
+
+    Node.js (version 12 or higher)
+    NPM (version 6 or higher)
+
+### Project setup
+
+1. Clone the project repository to your local machine:
+
+```
+git clone https://github.com/daniiialll72/PWP-ImageDirectory/tree/main/src/webapp
+```
+
+2. Navigate to the project directory:
+
+```
+cd webapp
+```
+
+3. install project dependencies
+
+```
+npm install
+```
+
+### Usage
+
+To run the project, follow these steps: 4. Buil the project:
+
+```
+npm run build
+```
+
+5. Run the project
+
+```
+npm run serve
+```
+
+6. Open your web browser and navigate to http://localhost:8080/
+
+#### Features
+
+This Vue project includes the following features:
+
+- View all images with their respective tags - and descriptions from the API.
+- Upload new photos to the API.
+- Delete photos from the API.
