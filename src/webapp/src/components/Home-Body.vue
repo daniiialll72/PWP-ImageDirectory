@@ -22,20 +22,30 @@
                 <v-btn class="delete-btn btn" @click="deleteImage(item.id)"
                   >Delete</v-btn
                 >
+                <v-btn class="edut-btn btn" @click="editImage(item.id)"
+                  >Edit</v-btn
+                >
               </v-card-actions>
             </v-card>
             <!-- POP UP  -->
-            <div
-              class="modal-container"
-              v-show="isModalVisible"
-              @click="closeModal"
-            >
+
+            <div class="modal-container" v-show="isModalVisible">
               <v-card class="modal-card">
-                <v-img :src="item.url" height="250px" width="250px"></v-img>
-                <h2>{{ item.tags }}</h2>
-                <p>{{ item.description }}</p>
+                <v-img
+                  v-bind:src="editedItem.url"
+                  height="250px"
+                  width="250px"
+                ></v-img>
+                <v-text-field
+                  v-model="editedItem.description"
+                  label="Description"
+                ></v-text-field>
+                <v-text-field
+                  v-model="editedItem.tags"
+                  label="Tags"
+                ></v-text-field>
                 <div class="btn-container mt-5">
-                  <v-btn class="mx-1">Save</v-btn>
+                  <v-btn class="mx-1" @click="saveItem">Save</v-btn>
                   <v-btn @click="closeModal" class="mx-1">Close</v-btn>
                 </div>
               </v-card>
@@ -58,6 +68,12 @@ export default {
     isModalVisible: false,
     title: "list of items",
     items: [],
+    editedItem: {
+      id: null,
+      url: "",
+      description: "",
+      tags: [],
+    },
   }),
   components: {},
   mounted() {
@@ -81,7 +97,6 @@ export default {
     },
     closeModal() {
       this.isModalVisible = false;
-      console.log("close is working");
     },
     deleteImage(imageId) {
       console.log("the image is about to be deleted");
@@ -99,6 +114,50 @@ export default {
           console.error(error);
         });
     },
+    editImage(itemId) {
+      // Find the item by its ID in the 'items' array
+      const itemToEdit = this.items.find((item) => item.id === itemId);
+
+      // Update the 'editedItem' data property with the item data
+      this.editedItem = {
+        id: itemToEdit.id,
+        url: itemToEdit.url,
+        description: itemToEdit.description,
+        tags: [...itemToEdit.tags], // Create a copy of the tags array to prevent modification of the original item
+      };
+
+      // Show the modal for editing the item
+      this.isModalVisible = true;
+    },
+
+    // Function to handle the save event
+    saveItem() {
+      // Send the edited item data to the server using Axios PUT request
+      console.log("the edited item is", this.editedItem);
+      axios
+        .patch("http://86.50.229.208:5000/api/images/" + this.editedItem.id, {
+          description: this.editedItem.description,
+          tags: this.editedItem.tags,
+        })
+        .then((response) => {
+          // Handle the response if needed
+          console.log(response.data);
+          // Close the modal
+          this.isModalVisible = false;
+          // Update the item in the 'items' array with the edited version
+          const index = this.items.findIndex(
+            (item) => item.id === this.editedItem.id
+          );
+          if (index !== -1) {
+            this.items.splice(index, 1, this.editedItem);
+          }
+        })
+        .catch((error) => {
+          // Handle the error if needed
+          console.error(error);
+        });
+      this.isModalVisible = false;
+    },
   },
 };
 </script>
@@ -114,11 +173,18 @@ export default {
   padding: 0;
 }
 
+.btns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
 .btn {
   background-color: white;
-  font-size: 0.6rem;
+  font-size: 0.5rem;
   font-weight: bold;
-  position: absolute;
+  width: 45px;
+  /* position: absolute; */
 }
 .btn:hover {
   background-color: gray;
